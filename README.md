@@ -8,6 +8,22 @@ through the team selector; they retain the common schedule from the source Excel
 
 **Last verified: 2026-09-23.**
 
+## Design references
+
+The revised interface uses a project masthead, horizontal navigation and a
+shared work-package timeline. Fira Sans is used for interface text and tables;
+Source Serif 4 is used for the project and section titles. Font files and their
+SIL Open Font Licenses are included in `assets/fonts/`.
+
+The design was informed by [EMBL's design guidelines](https://www.embl.org/guidelines/design/),
+its [typographic guidance](https://embl-design-language.github.io/Springboard/typography/),
+and the [frontend-design skill](https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md).
+These are design references, not institutional affiliations.
+
+The six sections were checked in Chrome at 1440 px and 390 px viewport widths.
+The checks covered navigation, font loading, page overflow, team selection and
+the midterm week. The schedule and scientific task definitions remain unchanged.
+
 A static, English project-management and presentation dashboard for the Peak
 Deconvolution project (voltammetric data acquisition, predictive modelling and
 explainable analysis). It is a plain static site: no backend, no build step,

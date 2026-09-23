@@ -208,10 +208,10 @@ function renderStats() {
   if (!box) return;
   clear(box);
   const stats = [
-    ["Work packages", (data.packages || []).length],
-    ["Planned tasks", tasksOf().length],
-    ["Planned weeks", totalWeeks()],
-    ["Team members", scopeTeams().reduce((n, team) => n + (team.members || []).length, 0)],
+    ["work packages", (data.packages || []).length],
+    ["planned tasks", tasksOf().length],
+    ["weeks", totalWeeks()],
+    ["team members", scopeTeams().reduce((n, team) => n + (team.members || []).length, 0)],
   ];
   for (const [label, value] of stats) {
     const item = el("div", "stat");
@@ -227,29 +227,58 @@ function renderPackagesOverview() {
   const box = byId("overview-packages");
   if (!box) return;
   clear(box);
+  const table = el("table", "programme-table");
+  const columns = el("colgroup");
+  for (const width of ["7%", "40%", ...Array(15).fill("3.5333%")]) {
+    const column = el("col"); column.style.width = width; columns.appendChild(column);
+  }
+  table.appendChild(columns);
+  table.appendChild(el("caption", "visually-hidden", "Planned work package activity"));
+  const thead = el("thead");
+  const headRow = el("tr");
+  const pkgHead = el("th", null, "Package");
+  pkgHead.scope = "col";
+  pkgHead.colSpan = 2;
+  headRow.appendChild(pkgHead);
+  for (let w = 1; w <= totalWeeks(); w++) {
+    const th = el("th", null, "W" + w);
+    th.scope = "col";
+    headRow.appendChild(th);
+  }
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+  const tbody = el("tbody");
   for (const pkg of data.packages || []) {
     const weeks = packageWeeks(pkg);
-    const card = el("div", "package-summary");
-    card.dataset.wp = pkg.id;
-    if (pkg.color) card.style.setProperty("--wp", pkg.color);
-    card.append(
-      el("span", "wp-code", pkg.id),
-      el("h3", "package-name", pkg.name),
-      el("div", "package-summary-meta", `${(pkg.tasks || []).length} tasks · ${formatWeeks(weeks)}`)
-    );
-    const mini = el("div", "mini-timeline");
-    mini.setAttribute("aria-label", "Planned weeks for " + pkg.name + ": " + (weeks.join(", ") || "none"));
-    for (let w = 1; w <= totalWeeks(); w++) {
-      mini.appendChild(el("span", "week" + (weeks.includes(w) ? " active" : "")));
-    }
-    card.appendChild(mini);
-    const btn = el("button", "btn btn-outline-primary btn-sm", "View package");
+    const row = el("tr", "programme-row");
+    row.dataset.wp = pkg.id;
+    if (pkg.color) row.style.setProperty("--wp", pkg.color);
+    row.appendChild(el("td", "wp-code", pkg.id));
+    const scopeHead = el("th", null);
+    scopeHead.scope = "row";
+    const btn = el("button", "programme-title", pkg.name);
     btn.type = "button";
     btn.dataset.go = "packages";
     btn.dataset.wp = pkg.id;
-    card.appendChild(btn);
-    box.appendChild(card);
+    scopeHead.appendChild(btn);
+    row.appendChild(scopeHead);
+    for (let w = 1; w <= totalWeeks(); w++) {
+      let cls = "programme-week";
+      if (w === state.week) cls += " selected-week";
+      if (midtermWeeks.has(w)) cls += " midterm-week";
+      const cell = el("td", cls);
+      cell.setAttribute("aria-label", `${pkg.id}, week ${w}: ${weeks.includes(w) ? "planned" : "no activity scheduled"}`);
+      if (weeks.includes(w)) {
+        const mark = el("span", "programme-mark");
+        mark.title = pkg.id + ": " + pkg.name + " — planned for week " + w;
+        cell.appendChild(mark);
+      }
+      row.appendChild(cell);
+    }
+    tbody.appendChild(row);
   }
+  table.appendChild(tbody);
+  box.appendChild(table);
 }
 
 function renderFocus() {
@@ -318,15 +347,6 @@ function renderTeams() {
       ul.appendChild(li);
     }
     card.appendChild(ul);
-    const counts = {};
-    for (const { t } of tasksOf()) {
-      const s = statusFor(t, team.id);
-      counts[s] = (counts[s] || 0) + 1;
-    }
-    if (Object.keys(counts).length) {
-      card.appendChild(el("div", "team-status", "Task status: " +
-        Object.entries(counts).map(([s, n]) => `${n} ${s}`).join(", ")));
-    }
     box.appendChild(card);
   }
 }
@@ -423,13 +443,15 @@ function outputLink(o) {
 function renderPackages() {
   const box = byId("package-list");
   if (!box) return;
+  const existing = [...box.querySelectorAll(":scope > details")];
+  const openPackages = new Set(existing.filter(item => item.open).map(item => item.dataset.wp));
   clear(box);
   const teams = scopeTeams();
   (data.packages || []).forEach((pkg, i) => {
     const details = el("details", "work-package");
     details.style.setProperty("--wp", pkg.color);
     details.dataset.wp = pkg.id;
-    if (i === 0) details.open = true;
+    details.open = existing.length ? openPackages.has(pkg.id) : i === 0;
     const summary = el("summary", "package-summary-head");
     summary.append(
       el("span", "wp-code", pkg.id),
@@ -451,12 +473,14 @@ function renderPackages() {
         el("span", "task-weeks", formatWeeks(t.weeks)),
         el("span", "task-owner", t.owner || "Not assigned")
       );
+      const statuses = el("span", "task-statuses");
       for (const team of teams) {
         const status = statusFor(t, team.id);
         const badge = el("span", "task-status status-" + status.toLowerCase().replace(/\s+/g, "-"), `${teamShort(team)}: ${status}`);
         badge.dataset.team = team.id;
-        row.appendChild(badge);
+        statuses.appendChild(badge);
       }
+      row.appendChild(statuses);
       const outputs = (t.outputs || []).map(outputLink).filter(Boolean);
       if (outputs.length) {
         const span = el("span", "task-outputs");

@@ -35,7 +35,7 @@
       "id": "WP1",
       "name": "Local Dataset Acquisition",
       "shortName": "Acquisition",
-      "summary": "Plan, perform and organise the local voltammetric experiment set into a labelled dataset.",
+      "summary": "Design and conduct voltammetric measurements, assess measurement quality and compile a labelled local dataset.",
       "color": "#009289",
       "tasks": [
         {
@@ -80,7 +80,7 @@
       "id": "WP2",
       "name": "Existing Dataset Preparation and Preprocessing",
       "shortName": "Preprocessing",
-      "summary": "Review the existing dataset, define data splits and build a validated preprocessing pipeline.",
+      "summary": "Review the reference dataset, define training, validation and test partitions, and establish the preprocessing pipeline.",
       "color": "#00578c",
       "tasks": [
         {
@@ -116,7 +116,7 @@
       "id": "WP3",
       "name": "Model Development and Evaluation",
       "shortName": "Modelling",
-      "summary": "Develop and compare detection and quantification models on the existing dataset.",
+      "summary": "Develop and evaluate models for analyte detection, concentration classification and regression on the reference dataset.",
       "color": "#726dc4",
       "tasks": [
         {
@@ -161,7 +161,7 @@
       "id": "WP4",
       "name": "Model Adaptation and Evaluation on Local Data",
       "shortName": "Adaptation",
-      "summary": "Prepare the local dataset and adapt and evaluate the developed pipelines on it.",
+      "summary": "Prepare the local dataset, adapt the established modelling pipelines and evaluate their performance.",
       "color": "#772f6f",
       "tasks": [
         {
@@ -215,7 +215,7 @@
       "id": "WP5",
       "name": "Explainable AI (XAI)",
       "shortName": "Explainability",
-      "summary": "Select an explanation method, run it on the project models and test its faithfulness and stability.",
+      "summary": "Select and apply an explainability method, then assess the faithfulness and stability of the resulting explanations.",
       "color": "#946200",
       "tasks": [
         {
@@ -251,7 +251,7 @@
       "id": "WP6",
       "name": "Web Interface Development and Integration",
       "shortName": "Interface",
-      "summary": "Build the web interface, integrate the pipelines, add result queries and document the system.",
+      "summary": "Develop the web interface, integrate the modelling pipelines and result queries, and complete system testing and documentation.",
       "color": "#bb565a",
       "tasks": [
         {
@@ -338,14 +338,14 @@
     },
     {
       "date": "2026-09-22",
-      "title": "XAI package established in place of natural language interaction",
-      "summary": "The old natural language interaction package was replaced by WP5 · Explainable AI (XAI) with three sub-tasks; the XAI method choice is intentionally left open.",
+      "title": "Explainability defined as a dedicated work package",
+      "summary": "WP5 replaces the previous natural-language interaction package with method selection, explanation runs, and faithfulness and stability testing. The specific explainability method remains to be selected.",
       "actions": []
     },
     {
       "date": "2026-09-22",
-      "title": "Natural language interaction reduced to one chatbot task",
-      "summary": "The former natural language interaction scope was reduced to the single task WP6.3 · Chatbot integration (result queries), result queries only.",
+      "title": "Chatbot integration limited to result queries",
+      "summary": "Natural-language interaction is limited to WP6.3, which provides queries of model results within the web interface.",
       "actions": []
     }
   ],
