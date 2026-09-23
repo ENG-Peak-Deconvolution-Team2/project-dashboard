@@ -2,7 +2,7 @@
  * ENG project dashboard — application logic (all UI strings English).
  *
  * This script owns only dynamic content inside the static containers shipped
- * by index.html. Panel shells, nav buttons, the team/week filters and all
+ * by index.html. Panel shells, nav buttons, the planning-week filter and all
  * container elements are static; nothing here clones or moves them. Every
  * JSON value is rendered with document.createElement + textContent, and every
  * link is sanitized to http(s) or relative same-site paths before use.
@@ -17,7 +17,7 @@
  *     "startDate": string|null, "repositoryUrl": string|null, "siteUrl": string|null
  *   },
  *   "teams": [{
- *     "id": "team1", "name": string, "approach": string,
+ *     "id": "team2", "name": string, "approach": string,
  *     "members": [{ "name": string, "department": string }]
  *   }],
  *   "packages": [{
@@ -46,14 +46,14 @@
 "use strict";
 
 const DATA_URL = "data/project.json";
-const ROUTES = ["overview", "schedule", "packages", "results", "resources", "journal"];
+const ROUTES = ["overview", "schedule", "packages", "presentations", "risks", "results", "resources", "journal"];
 const WEEKS_FALLBACK = 15;
 const DEFAULT_WEEK = 2;
 
 let data = null;
 let presentationWeeks = new Set();
 let midtermWeeks = new Set();
-const state = { team: "team2", week: DEFAULT_WEEK };
+const state = { week: DEFAULT_WEEK };
 
 /* ---------------- small helpers ---------------- */
 
@@ -118,8 +118,7 @@ function packageWeeks(pkg) {
 }
 
 function scopeTeams() {
-  const teams = data.teams || [];
-  return state.team === "all" ? teams : teams.filter((t) => t.id === state.team);
+  return (data.teams || []).filter(t => t.id === "team2");
 }
 
 function teamById(id) { return (data.teams || []).find((t) => t.id === id); }
@@ -151,8 +150,7 @@ function formatWeeks(weeks) {
 
 function modellingLabel(task) {
   if (!task.modelling) return null;
-  if (state.team === "all") return "T1 DL / T2 ML";
-  const team = teamById(state.team);
+  const team = teamById("team2");
   return team && team.approach ? team.approach : null;
 }
 
@@ -164,15 +162,10 @@ function weekModifiers(w) {
   return c;
 }
 
-/* ---------------- top controls (team / planning week) ---------------- */
+/* ---------------- planning week ---------------- */
 
 function wireControls() {
-  const teamSel = byId("team-filter");
   const weekSel = byId("week-filter");
-  if (teamSel) teamSel.addEventListener("change", () => {
-    state.team = teamSel.value || "all";
-    renderAll();
-  });
   if (weekSel) weekSel.addEventListener("change", () => {
     const w = parseInt(weekSel.value, 10);
     if (Number.isFinite(w)) { state.week = w; renderAll(); }
@@ -190,15 +183,6 @@ function ensureControls() {
     }
     weekSel.value = String(state.week);
   }
-  const teamSel = byId("team-filter");
-  if (teamSel) {
-    if (teamSel.options.length === 0) {
-      teamSel.appendChild(option("all", "All teams"));
-      for (const t of data.teams || []) teamSel.appendChild(option(t.id, t.name));
-    }
-    if (![...teamSel.options].some((o) => o.value === state.team)) state.team = "all";
-    teamSel.value = state.team;
-  }
 }
 
 /* ---------------- renderers ---------------- */
@@ -208,10 +192,10 @@ function renderStats() {
   if (!box) return;
   clear(box);
   const stats = [
-    ["work packages", (data.packages || []).length],
-    ["planned tasks", tasksOf().length],
-    ["weeks", totalWeeks()],
-    ["team members", scopeTeams().reduce((n, team) => n + (team.members || []).length, 0)],
+    ["Work packages", (data.packages || []).length],
+    ["Planned tasks", tasksOf().length],
+    ["Presentations", presentationWeeks.size],
+    ["Planning weeks", totalWeeks()],
   ];
   for (const [label, value] of stats) {
     const item = el("div", "stat");
@@ -229,7 +213,7 @@ function renderPackagesOverview() {
   clear(box);
   const table = el("table", "programme-table");
   const columns = el("colgroup");
-  for (const width of ["7%", "40%", ...Array(15).fill("3.5333%")]) {
+  for (const width of ["8%", "32%", ...Array(totalWeeks()).fill((60 / totalWeeks()) + "%")]) {
     const column = el("col"); column.style.width = width; columns.appendChild(column);
   }
   table.appendChild(columns);
@@ -304,25 +288,97 @@ function renderFocus() {
   }
 }
 
-function renderMilestones() {
-  const box = byId("overview-milestones");
-  if (!box) return;
-  clear(box);
-  const upcoming = (data.milestones || [])
-    .filter((m) => Number.isFinite(m.week) && m.week >= state.week)
-    .sort((a, b) => a.week - b.week);
-  if (!upcoming.length) {
-    box.appendChild(el("div", "empty-state", `No milestones are scheduled from week ${state.week} onward.`));
-    return;
+function packageTags(ids) {
+  const tags = el("div", "package-tags");
+  for (const id of ids || []) {
+    const pkg = data.packages.find(p => p.id === id);
+    if (!pkg) continue;
+    const a = anchor("#packages", id);
+    a.className = "package-tag";
+    a.dataset.go = "packages";
+    a.dataset.wp = id;
+    a.title = pkg.name;
+    a.style.setProperty("--wp", pkg.color);
+    tags.appendChild(a);
   }
-  for (const m of upcoming.slice(0, 4)) {
-    const item = el("div", "milestone" + (m.type === "midterm" ? " midterm" : ""));
-    item.append(
-      el("span", "milestone-week", "Week " + m.week),
-      el("span", "milestone-title", m.title || "Milestone"),
-      el("span", "milestone-type", m.type || "")
-    );
-    box.appendChild(item);
+  return tags;
+}
+
+function reviewLink(week, label) {
+  const a = anchor("#presentations", label);
+  a.dataset.go = "presentations";
+  if (week) a.dataset.presentation = String(week);
+  return a;
+}
+
+function renderPresentations() {
+  const list = byId("presentation-list");
+  const rail = byId("presentation-rail");
+  const overview = byId("overview-presentation");
+  clear(list); clear(rail); clear(overview);
+  const reviews = (data.presentations || []).filter(p => presentationWeeks.has(p.week)).sort((a, b) => a.week - b.week);
+  const next = reviews.find(p => p.week >= state.week);
+  overview.appendChild(el("span", "section-eyebrow", next?.week === state.week ? "Presentation in the selected week" : "Next planned presentation"));
+  if (next) {
+    overview.append(el("h2", "next-week", "Week " + next.week), el("h3", null, next.title));
+    overview.appendChild(el("p", null, next.expectations[0]));
+  } else {
+    overview.append(el("h2", "next-week", "All six reviews"), el("p", null, "No further presentation is scheduled after the selected planning week. Review the briefing plans and remaining project tasks."));
+  }
+  const link = reviewLink(next?.week, next ? "View expectations ↗" : "View presentations ↗");
+  link.className = "review-link";
+  overview.appendChild(link);
+  for (const p of reviews) {
+    const isNext = p === next;
+    const stop = el("button", "presentation-stop" + (isNext ? " is-next" : ""));
+    stop.type = "button";
+    stop.dataset.go = "presentations";
+    stop.dataset.presentation = String(p.week);
+    stop.setAttribute("aria-label", "View week " + p.week + " presentation expectations");
+    stop.append(el("small", null, "Week"), el("strong", null, String(p.week).padStart(2, "0")));
+    rail.appendChild(stop);
+    const card = el("article", "presentation-card" + (isNext ? " is-next" : ""));
+    card.dataset.reviewWeek = String(p.week);
+    card.tabIndex = -1;
+    const top = el("div", "presentation-top");
+    const medallion = el("span", "week-medallion");
+    medallion.append(el("small", null, "WEEK"), el("strong", null, String(p.week).padStart(2, "0")));
+    const heading = el("div");
+    const position = p.week === state.week ? "Selected planning week" : isNext ? "Next in the selected plan" : p.week < state.week ? "Earlier in the plan" : "Later in the plan";
+    heading.append(el("h3", null, p.title), el("span", "review-position", position));
+    top.append(medallion, heading);
+    card.append(top, packageTags(p.packages), el("h4", "card-label", "Expected presentation content"));
+    const items = el("ul", "expectation-list");
+    for (const expectation of p.expectations || []) items.appendChild(el("li", null, expectation));
+    card.appendChild(items);
+    const evidence = el("div", "evidence-box");
+    evidence.append(el("h4", "card-label", "Evidence to bring"), el("p", null, p.evidence));
+    const footer = el("div", "review-footer");
+    footer.appendChild(el("span", null, "Presentation record: " + (p.status || "Not recorded")));
+    for (const output of p.outputs || []) {
+      const a = outputLink(output);
+      if (a) footer.appendChild(a);
+    }
+    card.append(evidence, footer);
+    list.appendChild(card);
+  }
+}
+
+function renderRisks() {
+  const list = byId("risk-list");
+  clear(list);
+  for (const risk of data.risks || []) {
+    const card = el("article", "risk-card");
+    card.dataset.risk = risk.id;
+    const top = el("div", "risk-card-header");
+    top.append(el("span", "risk-id", risk.id), el("span", "risk-state", risk.status || "To review"));
+    card.append(top, el("h3", null, risk.title), packageTags(risk.packages));
+    const details = el("dl", "risk-details");
+    details.append(el("dt", null, "Early warning"), el("dd", null, risk.trigger), el("dt", null, "Potential impact"), el("dd", null, risk.impact));
+    const response = el("div", "risk-response");
+    response.append(el("h4", null, "Proposed response"), el("p", null, risk.mitigation), el("h4", null, "Fallback plan"), el("p", null, risk.fallback));
+    card.append(details, response, el("div", "risk-owner", "Suggested lead: " + risk.suggestedOwner));
+    list.appendChild(card);
   }
 }
 
@@ -343,7 +399,9 @@ function renderTeams() {
       const li = el("li", "team-member");
       const name = el("span", "member-name", m.name);
       if (lead && m.name === lead) name.appendChild(el("span", "lead-badge", "Project lead"));
-      li.append(name, el("span", "member-dept", m.department || ""));
+      const avatar = el("span", "member-avatar", m.name.split(/\s+/).map(part => part[0]).slice(0, 2).join(""));
+      avatar.setAttribute("aria-hidden", "true");
+      li.append(avatar, name, el("span", "member-dept", m.department || ""));
       ul.appendChild(li);
     }
     card.appendChild(ul);
@@ -356,11 +414,8 @@ function renderSchedule() {
   if (!box) return;
   clear(box);
   const total = totalWeeks();
-  const team = state.team === "all" ? null : teamById(state.team);
   const table = el("table", "gantt-table");
-  table.appendChild(el("caption", "gantt-caption", team
-    ? `Work plan, weeks 1–${total}. Method shown for ${team.name}${team.approach ? " (" + team.approach + ")" : ""}; the schedule is shared by all teams.`
-    : `Work plan, weeks 1–${total}. Shared by all teams.`));
+  table.appendChild(el("caption", "gantt-caption", `Team 2 · Machine learning · Weeks 1–${total}`));
   const thead = el("thead");
   const hrow = el("tr");
   const c1 = el("th", "gantt-col-task", "Package / task"); c1.scope = "col";
@@ -460,7 +515,7 @@ function renderPackages() {
     );
     const statusParts = teams.map((team) => {
       const set = [...new Set((pkg.tasks || []).map((t) => statusFor(t, team.id)))];
-      return `${teamShort(team)}: ${set.join(", ")}`;
+      return set.join(", ");
     });
     summary.appendChild(el("span", "package-status", statusParts.join(" · ")));
     const body = el("div", "package-body");
@@ -476,7 +531,7 @@ function renderPackages() {
       const statuses = el("span", "task-statuses");
       for (const team of teams) {
         const status = statusFor(t, team.id);
-        const badge = el("span", "task-status status-" + status.toLowerCase().replace(/\s+/g, "-"), `${teamShort(team)}: ${status}`);
+        const badge = el("span", "task-status status-" + status.toLowerCase().replace(/\s+/g, "-"), status);
         badge.dataset.team = team.id;
         statuses.appendChild(badge);
       }
@@ -498,12 +553,12 @@ function renderResults() {
   const box = byId("results-list");
   if (!box) return;
   clear(box);
-  const exps = (data.experiments || []).filter(x => state.team === "all" || x.team === state.team);
+  const exps = (data.experiments || []).filter(x => x.team === "team2");
   if (!exps.length) {
     const empty = el("div", "empty-state");
     empty.append(
       el("h3", null, "No results recorded yet"),
-      el("p", "result-empty-note", "Recorded experiments for this team view will appear here with their dataset, method and evaluation metrics.")
+      el("p", "result-empty-note", "Team 2’s experiment records will appear here with their dataset, method and evaluation metrics. No experimental outcomes have been recorded yet.")
     );
     box.appendChild(empty);
     return;
@@ -639,7 +694,8 @@ function renderAll() {
   renderStats();
   renderPackagesOverview();
   renderFocus();
-  renderMilestones();
+  renderPresentations();
+  renderRisks();
   renderTeams();
   renderSchedule();
   renderWeekly();
@@ -732,6 +788,13 @@ function wireTabs() {
     e.preventDefault();
     showTab(route);
     if (route === "packages" && target.dataset.wp) focusPackage(target.dataset.wp);
+    if (route === "presentations" && /^\d+$/.test(target.dataset.presentation || "")) {
+      const card = document.querySelector('.presentation-card[data-review-week="' + target.dataset.presentation + '"]');
+      if (card) {
+        card.focus({ preventScroll: true });
+        card.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+      }
+    }
   });
 }
 
@@ -771,7 +834,6 @@ async function initialise() {
     if (!data.project || !Array.isArray(data.packages) || !Array.isArray(data.teams)) {
       throw new Error("Invalid project data.");
     }
-    state.team = byId("team-filter").value;
     indexMilestones();
     ensureControls();
     renderAll();

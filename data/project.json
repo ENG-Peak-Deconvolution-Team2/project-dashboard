@@ -12,21 +12,18 @@
   },
   "teams": [
     {
-      "id": "team1",
-      "name": "Team 1",
-      "approach": "Deep learning",
-      "members": [
-        { "name": "Sıla Elif Kocasaraç", "department": "BME" },
-        { "name": "Batu Arıbakır", "department": "EEE" }
-      ]
-    },
-    {
       "id": "team2",
       "name": "Team 2",
       "approach": "Machine learning",
       "members": [
-        { "name": "Hıba Berchane", "department": "BME" },
-        { "name": "Hasan Oruçlar", "department": "EEE" }
+        {
+          "name": "Hıba Berchane",
+          "department": "BME"
+        },
+        {
+          "name": "Hasan Oruçlar",
+          "department": "EEE"
+        }
       ]
     }
   ],
@@ -41,37 +38,63 @@
         {
           "id": "WP1.1",
           "name": "Experimental design and dataset specification",
-          "weeks": [2, 3],
+          "weeks": [
+            2,
+            3
+          ],
           "owner": "BME+EEE",
           "modelling": false,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         },
         {
           "id": "WP1.2",
           "name": "Solution and experimental condition preparation",
-          "weeks": [2, 3, 4],
+          "weeks": [
+            2,
+            3,
+            4
+          ],
           "owner": "BME lead",
           "modelling": false,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         },
         {
           "id": "WP1.3",
           "name": "Voltammetric measurements",
-          "weeks": [2, 3, 4, 5, 6],
+          "weeks": [
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
           "owner": "BME lead",
           "modelling": false,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         },
         {
           "id": "WP1.4",
           "name": "Measurement quality control, labelling and dataset organisation",
-          "weeks": [3, 4, 5, 6],
+          "weeks": [
+            3,
+            4,
+            5,
+            6
+          ],
           "owner": "BME lead",
           "modelling": false,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         }
       ]
@@ -86,28 +109,42 @@
         {
           "id": "WP2.1",
           "name": "Data, analyte information and target label review",
-          "weeks": [2],
+          "weeks": [
+            2
+          ],
           "owner": "BME lead",
           "modelling": false,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         },
         {
           "id": "WP2.2",
           "name": "Training, validation and test split definition",
-          "weeks": [2, 3],
+          "weeks": [
+            2,
+            3
+          ],
           "owner": "EEE lead",
           "modelling": false,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         },
         {
           "id": "WP2.3",
           "name": "Preprocessing pipeline preparation and validation",
-          "weeks": [2, 3],
+          "weeks": [
+            2,
+            3
+          ],
           "owner": "EEE lead",
           "modelling": false,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         }
       ]
@@ -122,37 +159,57 @@
         {
           "id": "WP3.1",
           "name": "Analyte presence detection",
-          "weeks": [2, 3, 4],
+          "weeks": [
+            2,
+            3,
+            4
+          ],
           "owner": "EEE lead",
           "modelling": true,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         },
         {
           "id": "WP3.2",
           "name": "Quantification — concentration classification",
-          "weeks": [4, 5],
+          "weeks": [
+            4,
+            5
+          ],
           "owner": "EEE lead",
           "modelling": true,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         },
         {
           "id": "WP3.3",
           "name": "Quantification — concentration regression",
-          "weeks": [5, 6],
+          "weeks": [
+            5,
+            6
+          ],
           "owner": "EEE lead",
           "modelling": true,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         },
         {
           "id": "WP3.4",
           "name": "Model comparison and pipeline finalisation",
-          "weeks": [7],
+          "weeks": [
+            7
+          ],
           "owner": "BME+EEE",
           "modelling": false,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         }
       ]
@@ -167,46 +224,73 @@
         {
           "id": "WP4.1",
           "name": "New-data preparation, splitting and preprocessing",
-          "weeks": [6, 7],
+          "weeks": [
+            6,
+            7
+          ],
           "owner": "EEE lead",
           "modelling": false,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         },
         {
           "id": "WP4.2",
           "name": "Detection pipeline adaptation and retraining",
-          "weeks": [9, 10],
+          "weeks": [
+            9,
+            10
+          ],
           "owner": "EEE lead",
           "modelling": true,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         },
         {
           "id": "WP4.3",
           "name": "Quantification — classification pipeline adaptation and retraining",
-          "weeks": [9, 10, 11],
+          "weeks": [
+            9,
+            10,
+            11
+          ],
           "owner": "EEE lead",
           "modelling": true,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         },
         {
           "id": "WP4.4",
           "name": "Quantification — regression pipeline adaptation and retraining",
-          "weeks": [10, 11],
+          "weeks": [
+            10,
+            11
+          ],
           "owner": "EEE lead",
           "modelling": true,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         },
         {
           "id": "WP4.5",
           "name": "Result evaluation and comparison",
-          "weeks": [12, 13, 14],
+          "weeks": [
+            12,
+            13,
+            14
+          ],
           "owner": "BME+EEE",
           "modelling": false,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         }
       ]
@@ -221,28 +305,52 @@
         {
           "id": "WP5.1",
           "name": "XAI method selection and setup",
-          "weeks": [3, 4, 5, 6, 7],
+          "weeks": [
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
           "owner": "EEE lead",
           "modelling": false,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         },
         {
           "id": "WP5.2",
           "name": "Explanation runs on project models",
-          "weeks": [5, 6, 7, 9, 10, 11, 12],
+          "weeks": [
+            5,
+            6,
+            7,
+            9,
+            10,
+            11,
+            12
+          ],
           "owner": "EEE lead",
           "modelling": false,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         },
         {
           "id": "WP5.3",
           "name": "Explanation faithfulness and stability testing",
-          "weeks": [13, 14, 15],
+          "weeks": [
+            13,
+            14,
+            15
+          ],
           "owner": "BME+EEE",
           "modelling": false,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         }
       ]
@@ -257,50 +365,106 @@
         {
           "id": "WP6.1",
           "name": "Web interface design and data upload",
-          "weeks": [2, 3, 4],
+          "weeks": [
+            2,
+            3,
+            4
+          ],
           "owner": "BME+EEE",
           "modelling": false,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         },
         {
           "id": "WP6.2",
           "name": "Pipeline integration and result visualisation",
-          "weeks": [4, 5, 6, 7, 9, 10, 11, 12],
+          "weeks": [
+            4,
+            5,
+            6,
+            7,
+            9,
+            10,
+            11,
+            12
+          ],
           "owner": "EEE lead",
           "modelling": false,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         },
         {
           "id": "WP6.3",
           "name": "Chatbot integration (result queries)",
-          "weeks": [11, 12],
+          "weeks": [
+            11,
+            12
+          ],
           "owner": "EEE lead",
           "modelling": false,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         },
         {
           "id": "WP6.4",
           "name": "End-to-end testing and documentation",
-          "weeks": [13, 14, 15],
+          "weeks": [
+            13,
+            14,
+            15
+          ],
           "owner": "BME+EEE",
           "modelling": false,
-          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "status": {
+            "team2": "Not reported"
+          },
           "outputs": []
         }
       ]
     }
   ],
   "milestones": [
-    { "week": 3, "title": "Progress presentation", "type": "presentation" },
-    { "week": 5, "title": "Progress presentation", "type": "presentation" },
-    { "week": 7, "title": "Progress presentation", "type": "presentation" },
-    { "week": 8, "title": "Midterm", "type": "midterm" },
-    { "week": 10, "title": "Progress presentation", "type": "presentation" },
-    { "week": 12, "title": "Progress presentation", "type": "presentation" },
-    { "week": 14, "title": "Progress presentation", "type": "presentation" }
+    {
+      "week": 3,
+      "title": "Progress presentation",
+      "type": "presentation"
+    },
+    {
+      "week": 5,
+      "title": "Progress presentation",
+      "type": "presentation"
+    },
+    {
+      "week": 7,
+      "title": "Progress presentation",
+      "type": "presentation"
+    },
+    {
+      "week": 8,
+      "title": "Midterm",
+      "type": "midterm"
+    },
+    {
+      "week": 10,
+      "title": "Progress presentation",
+      "type": "presentation"
+    },
+    {
+      "week": 12,
+      "title": "Progress presentation",
+      "type": "presentation"
+    },
+    {
+      "week": 14,
+      "title": "Progress presentation",
+      "type": "presentation"
+    }
   ],
   "experiments": [],
   "resources": [
@@ -308,7 +472,7 @@
       "id": "gantt",
       "type": "document",
       "title": "Project work plan",
-      "description": "15-week work packages and team assignments.",
+      "description": "Original 15-week planning workbook. The dashboard presents the Team 2 scope.",
       "href": "documents/PeakDeconv_Gantt_Chart.xlsx",
       "label": "Download Excel"
     },
@@ -349,5 +513,231 @@
       "actions": []
     }
   ],
-  "meetings": []
+  "meetings": [],
+  "presentations": [
+    {
+      "week": 3,
+      "title": "Data foundations & first detection results",
+      "packages": [
+        "WP1",
+        "WP2",
+        "WP3",
+        "WP5",
+        "WP6"
+      ],
+      "expectations": [
+        "Explain the local measurement design, analytes, labels and initial quality-control procedure.",
+        "Present the reference dataset, split definition and preprocessing workflow scheduled for completion in week 3.",
+        "Show preliminary detection results if available; identify remaining work before the task ends in week 4.",
+        "Outline the XAI method-selection criteria and show progress on the initial web interface."
+      ],
+      "evidence": "Dataset summary, split diagram, preprocessing example, initial detection table and interface screenshots.",
+      "status": "Not recorded",
+      "outputs": []
+    },
+    {
+      "week": 5,
+      "title": "Classification & emerging quantification",
+      "packages": [
+        "WP1",
+        "WP3",
+        "WP5",
+        "WP6"
+      ],
+      "expectations": [
+        "Report concentration-classification findings and compare them with the earlier detection results.",
+        "Introduce the regression setup and preliminary findings; regression continues into week 6.",
+        "Summarise measurement coverage, labelling progress and unresolved data-quality issues.",
+        "Show the first explanation examples, where available, and progress on pipeline integration."
+      ],
+      "evidence": "Detection and classification summary, regression setup, acquisition progress log and early explanation examples.",
+      "status": "Not recorded",
+      "outputs": []
+    },
+    {
+      "week": 7,
+      "title": "Reference models & local-data readiness",
+      "packages": [
+        "WP1",
+        "WP3",
+        "WP4",
+        "WP5",
+        "WP6"
+      ],
+      "expectations": [
+        "Compare detection, classification and regression on the reference dataset using the documented evaluation protocol.",
+        "Explain the selected pipelines, their limitations and the evidence supporting the selection.",
+        "Present the local dataset, quality-control record, split and preprocessing preparation.",
+        "Review the XAI setup, initial explanation runs and interface integration before the week 8 midterm."
+      ],
+      "evidence": "Model comparison table, pipeline specification, local-data summary and an integrated interface demonstration.",
+      "status": "Not recorded",
+      "outputs": []
+    },
+    {
+      "week": 10,
+      "title": "Adaptation to local measurements",
+      "packages": [
+        "WP4",
+        "WP5",
+        "WP6"
+      ],
+      "expectations": [
+        "Report the local-data detection adaptation scheduled to finish in week 10.",
+        "Present classification adaptation progress and the regression adaptation now underway; both continue into week 11.",
+        "Discuss differences between reference and local measurements and any limitations in comparability.",
+        "Show explanation examples and the result-query interface in development, identifying unresolved issues."
+      ],
+      "evidence": "Adaptation summary, dataset comparison, preliminary classification/regression tables and a result-query demonstration.",
+      "status": "Not recorded",
+      "outputs": []
+    },
+    {
+      "week": 12,
+      "title": "Evaluation, explanations & integration",
+      "packages": [
+        "WP4",
+        "WP5",
+        "WP6"
+      ],
+      "expectations": [
+        "Summarise the adapted detection, classification and regression pipelines completed through week 11.",
+        "Present the first consolidated evaluation and comparison findings; this task continues through week 14.",
+        "Review the explanation runs scheduled through week 12, including cases that remain difficult to interpret.",
+        "Demonstrate chatbot result queries and outline end-to-end testing and explanation testing for weeks 13–15."
+      ],
+      "evidence": "Consolidated evaluation draft, explanation examples, integrated query demonstration and a testing plan.",
+      "status": "Not recorded",
+      "outputs": []
+    },
+    {
+      "week": 14,
+      "title": "Consolidated findings & final checks",
+      "packages": [
+        "WP4",
+        "WP5",
+        "WP6"
+      ],
+      "expectations": [
+        "Present the completed local-data evaluation and comparison, stating the scope and limitations of each claim.",
+        "Show progress on explanation faithfulness and stability testing, with remaining week 15 work clearly identified.",
+        "Demonstrate the integrated interface and report end-to-end test findings and unresolved defects.",
+        "Summarise achieved outputs, open risks, documentation status and the remaining week 15 actions."
+      ],
+      "evidence": "Evaluation report, explanation-test evidence, end-to-end test summary, interface demonstration and a close-out task list.",
+      "status": "Not recorded",
+      "outputs": []
+    }
+  ],
+  "risks": [
+    {
+      "id": "R01",
+      "title": "Local measurements arrive late",
+      "packages": [
+        "WP1",
+        "WP4"
+      ],
+      "trigger": "Measurement access, materials or preparation delays leave the planned local dataset incomplete.",
+      "impact": "Local-data preparation and adaptation may not start at the scheduled time.",
+      "mitigation": "Review acquisition readiness at each presentation and coordinate the measurement plan with local-data preparation.",
+      "fallback": "Continue the reference-data work and document the unavailable local-data evaluation. Agree any revised scope or schedule with supervisors.",
+      "suggestedOwner": "BME lead, with EEE support",
+      "status": "To review"
+    },
+    {
+      "id": "R02",
+      "title": "Measurement quality or labels are inconsistent",
+      "packages": [
+        "WP1",
+        "WP2"
+      ],
+      "trigger": "Missing metadata, inconsistent labels or visibly unstable measurements appear during quality control.",
+      "impact": "Unreliable inputs can invalidate model development and subsequent comparisons.",
+      "mitigation": "Keep acquisition metadata with each measurement and use a documented quality-control and labelling review.",
+      "fallback": "Quarantine questionable records without altering raw sources; repeat measurements where feasible and report the resulting coverage limits.",
+      "suggestedOwner": "BME lead",
+      "status": "To review"
+    },
+    {
+      "id": "R03",
+      "title": "Data leakage compromises evaluation",
+      "packages": [
+        "WP2",
+        "WP3",
+        "WP4"
+      ],
+      "trigger": "Related measurements cross split boundaries or preprocessing is fitted using evaluation data.",
+      "impact": "Reported performance may overstate generalisation.",
+      "mitigation": "Review the intended independent unit and split assignments before training; fit learned preprocessing on the training partition only.",
+      "fallback": "Recreate affected splits or pipelines under the approved protocol, rerun affected experiments and label superseded results explicitly.",
+      "suggestedOwner": "EEE lead",
+      "status": "To review"
+    },
+    {
+      "id": "R04",
+      "title": "Model performance is weak or unstable",
+      "packages": [
+        "WP3",
+        "WP4"
+      ],
+      "trigger": "Validation performance varies markedly across the planned runs or fails to improve on the baseline.",
+      "impact": "Model selection becomes unreliable and useful predictive performance remains uncertain.",
+      "mitigation": "Compare models on the same approved evaluation protocol and inspect task-specific errors and data coverage.",
+      "fallback": "Retain the most defensible baseline, report limitations and seek supervisor agreement before changing targets, models or scope.",
+      "suggestedOwner": "EEE lead, with BME interpretation",
+      "status": "To review"
+    },
+    {
+      "id": "R05",
+      "title": "Reference and local data differ",
+      "packages": [
+        "WP4"
+      ],
+      "trigger": "Local signal patterns, acquisition conditions or label ranges differ from the reference dataset.",
+      "impact": "A reference-data pipeline may not perform reliably on local measurements.",
+      "mitigation": "Document acquisition and target differences; keep reference-data and local-data evaluation results distinguishable.",
+      "fallback": "Report the local adaptation findings separately and qualify unsupported transfer claims. Agree any further acquisition or adaptation work with supervisors.",
+      "suggestedOwner": "BME + EEE",
+      "status": "To review"
+    },
+    {
+      "id": "R06",
+      "title": "Explanations lack stability or support",
+      "packages": [
+        "WP5"
+      ],
+      "trigger": "Explanations change substantially under planned checks or do not support the stated interpretation.",
+      "impact": "Model explanations may be misleading or difficult to defend in a presentation.",
+      "mitigation": "Document the explanation method and evaluate faithfulness and stability before making interpretive claims.",
+      "fallback": "Present inconclusive findings explicitly and restrict conclusions to supported observations; revise the explanation approach with supervisor input.",
+      "suggestedOwner": "EEE lead, with BME interpretation",
+      "status": "To review"
+    },
+    {
+      "id": "R07",
+      "title": "The interface misrepresents model outputs",
+      "packages": [
+        "WP6"
+      ],
+      "trigger": "Displayed values, units, labels or sample identifiers disagree with saved reference outputs.",
+      "impact": "A demonstration can show incorrect results despite a valid modelling pipeline.",
+      "mitigation": "Compare the interface with recorded outputs and test the complete data-to-display path before presentations.",
+      "fallback": "Use a verified table-and-plot view or a documented recorded demonstration while integration defects are resolved.",
+      "suggestedOwner": "BME + EEE",
+      "status": "To review"
+    },
+    {
+      "id": "R08",
+      "title": "Result queries produce unsupported answers",
+      "packages": [
+        "WP6"
+      ],
+      "trigger": "A query response cites unavailable results or misstates the contents of a recorded experiment.",
+      "impact": "The query interface may communicate claims that the project evidence does not support.",
+      "mitigation": "Limit queries to recorded project results, retain their source identifiers and test missing-result questions.",
+      "fallback": "Disable unsupported query behaviour and use direct access to verified result tables until the issue is resolved.",
+      "suggestedOwner": "EEE lead",
+      "status": "To review"
+    }
+  ]
 }
