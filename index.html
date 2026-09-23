@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101d34">
+  <meta name="description" content="Peak Deconvolution: the Team 2 ENG workspace for work packages, schedules, research outputs and decisions.">
+  <title>Peak Deconvolution · Team 2</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="assets/bootstrap.bundle.min.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <aside class="sidebar" aria-label="Project navigation">
+    <a class="brand" href="#overview" data-go="overview"><span class="brand-mark" aria-hidden="true">pd<span>_</span></span><span>Peak<br>Deconvolution</span></a>
+    <div class="sidebar-label">ENG PROJECT / TEAM 2</div>
+    <nav class="project-nav" id="main-tabs" role="tablist" aria-label="Project sections" aria-orientation="vertical">
+      <button class="nav-link active" id="tab-overview" data-bs-toggle="tab" data-bs-target="#panel-overview" data-route="overview" type="button" role="tab" aria-controls="panel-overview" aria-selected="true" aria-current="page"><span class="nav-number" aria-hidden="true">01</span><span>Overview</span></button>
+      <button class="nav-link" id="tab-schedule" data-bs-toggle="tab" data-bs-target="#panel-schedule" data-route="schedule" type="button" role="tab" aria-controls="panel-schedule" aria-selected="false" tabindex="-1"><span class="nav-number" aria-hidden="true">02</span><span>Plan &amp; schedule</span></button>
+      <button class="nav-link" id="tab-packages" data-bs-toggle="tab" data-bs-target="#panel-packages" data-route="packages" type="button" role="tab" aria-controls="panel-packages" aria-selected="false" tabindex="-1"><span class="nav-number" aria-hidden="true">03</span><span>Work packages</span></button>
+      <button class="nav-link" id="tab-results" data-bs-toggle="tab" data-bs-target="#panel-results" data-route="results" type="button" role="tab" aria-controls="panel-results" aria-selected="false" tabindex="-1"><span class="nav-number" aria-hidden="true">04</span><span>Experiments &amp; results</span></button>
+      <button class="nav-link" id="tab-resources" data-bs-toggle="tab" data-bs-target="#panel-resources" data-route="resources" type="button" role="tab" aria-controls="panel-resources" aria-selected="false" tabindex="-1"><span class="nav-number" aria-hidden="true">05</span><span>Resources</span></button>
+      <button class="nav-link" id="tab-journal" data-bs-toggle="tab" data-bs-target="#panel-journal" data-route="journal" type="button" role="tab" aria-controls="panel-journal" aria-selected="false" tabindex="-1"><span class="nav-number" aria-hidden="true">06</span><span>Meetings &amp; decisions</span></button>
+    </nav>
+    <div class="sidebar-note"><span class="sidebar-label">PROJECT LEAD</span><strong>Hasan Oruçlar</strong><span>Planning &amp; coordination</span></div>
+    <div class="sidebar-bottom"><span class="small-mark" aria-hidden="true">ENG</span><span>Research. Track. Present.</span></div>
+  </aside>
+
+  <div class="workspace">
+    <header class="topbar">
+      <div class="project-context"><span class="eyebrow">TEAM 2 WORKSPACE</span><span>Peak Deconvolution</span></div>
+      <div class="topbar-actions"><a id="repository-link" href="#" hidden>Project repository <span aria-hidden="true">↗</span></a><a class="download-link" href="documents/PeakDeconv_Gantt_Chart.xlsx" download>Excel work plan <span aria-hidden="true">↓</span></a></div>
+    </header>
+    <main id="main" tabindex="-1">
+      <div class="page-heading">
+        <div><div class="eyebrow">ENG / PROJECT MANAGEMENT</div><h1 id="page-title">Overview</h1></div>
+        <div class="workspace-controls" aria-label="Workspace filters">
+          <div class="control"><label for="team-filter">Team view</label><select id="team-filter" class="form-select"><option value="team2" selected>Team 2 · ML</option><option value="all">Shared plan · all teams</option><option value="team1">Team 1 · DL reference</option></select></div>
+          <div class="control week-control"><label for="week-filter">Planning week</label><select id="week-filter" class="form-select" aria-describedby="week-help"><option value="1">Week 01</option><option value="2" selected>Week 02</option><option value="3">Week 03</option><option value="4">Week 04</option><option value="5">Week 05</option><option value="6">Week 06</option><option value="7">Week 07</option><option value="8">Week 08</option><option value="9">Week 09</option><option value="10">Week 10</option><option value="11">Week 11</option><option value="12">Week 12</option><option value="13">Week 13</option><option value="14">Week 14</option><option value="15">Week 15</option></select></div>
+        </div>
+      </div>
+      <p id="week-help" class="visually-hidden">Select a week in the project plan. This is not a report of the current calendar week.</p>
+      <div id="data-status" class="alert alert-danger" role="alert" hidden></div>
+      <noscript><div class="alert alert-warning">Enable JavaScript to explore the workspace. The <a href="documents/PeakDeconv_Gantt_Chart.xlsx">Excel work plan</a> is also available to download.</div></noscript>
+
+      <div class="tab-content" id="project-panels">
+        <section class="tab-pane fade show active" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" tabindex="0">
+          <div class="research-banner">
+            <div><span class="banner-kicker">THE RESEARCH PROGRAMME</span><h2>From voltammetric signals<br>to interpretable models.</h2><p>Team 2’s machine learning work within the shared programme of experimental acquisition, predictive modelling and explainable analysis.</p></div>
+            <div class="banner-track" aria-label="Project pathway"><span><b>01</b> Acquire</span><i aria-hidden="true">→</i><span><b>02</b> Model</span><i aria-hidden="true">→</i><span><b>03</b> Explain</span></div>
+          </div>
+          <div id="overview-stats" class="stats-grid" aria-label="Project scope"><p class="loading-copy">Loading project plan…</p></div>
+          <div class="overview-layout">
+            <section class="surface packages-surface"><div class="section-heading"><div><span class="eyebrow">THE WORK PROGRAMME</span><h2>Six connected work packages</h2></div><a href="#packages" data-go="packages" class="text-action">Explore all <span aria-hidden="true">↗</span></a></div><div id="overview-packages" class="package-grid"></div><div class="surface-note">Timeline marks show planned activity. Completion is reported separately.</div></section>
+            <section class="surface milestones-surface"><div class="section-heading"><div><span class="eyebrow">CHECKPOINTS</span><h2>Upcoming in the plan</h2></div></div><div id="overview-milestones"></div><a href="#schedule" data-go="schedule" class="text-action bottom-action">Open full schedule <span aria-hidden="true">↗</span></a></section>
+          </div>
+          <div class="overview-lower">
+            <section class="surface"><div class="section-heading"><div><span class="eyebrow">SELECTED WEEK</span><h2>Week <span data-selected-week>2</span> focus</h2></div><span class="subtle-tag">Planned tasks</span></div><div id="overview-focus" class="focus-list"></div></section>
+            <section class="surface"><div class="section-heading"><div><span class="eyebrow">PEOPLE &amp; RESPONSIBILITIES</span><h2>Project teams</h2></div></div><div id="overview-team" class="team-grid"></div><p class="surface-note">BME · Biomedical Engineering<br>EEE · Electrical and Electronics Engineering</p></section>
+          </div>
+        </section>
+
+        <section class="tab-pane fade" id="panel-schedule" role="tabpanel" aria-labelledby="tab-schedule" tabindex="0">
+          <div class="section-intro"><h2>A shared 15-week work plan</h2><p>Both teams follow the same task schedule. Modelling responsibilities distinguish Team 1’s deep learning work from Team 2’s machine learning work.</p></div>
+          <div class="surface schedule-surface"><div class="section-heading"><div><span class="eyebrow">PROJECT TIMELINE</span><h2>Work packages &amp; tasks</h2></div><div class="chart-key"><span><i class="key-plan" aria-hidden="true"></i>Planned activity</span><span><i class="key-review" aria-hidden="true"></i>Presentation</span><span><i class="key-midterm" aria-hidden="true"></i>Midterm</span></div></div><div class="gantt-scroll" tabindex="0" role="region" aria-label="Scrollable 15-week project schedule" id="schedule-table"></div><p class="surface-note">Week 1 has no scheduled tasks. Week 8 is reserved for the midterm. Calendar dates will be added when the semester start is confirmed.</p></div>
+          <section class="surface weekly-surface"><div class="section-heading"><div><span class="eyebrow">WEEKLY WORK PLAN</span><h2>Week <span data-selected-week>2</span></h2></div><span class="subtle-tag">Use the planning week selector above</span></div><div id="weekly-list" class="weekly-grid"></div></section>
+        </section>
+
+        <section class="tab-pane fade" id="panel-packages" role="tabpanel" aria-labelledby="tab-packages" tabindex="0">
+          <div class="section-intro"><h2>Responsibilities, activity and outputs</h2><p>Open a package to review its tasks, department leads and reported status. “Not reported” means a progress update has not yet been recorded.</p></div><div id="package-list" class="work-package-list"></div>
+        </section>
+
+        <section class="tab-pane fade" id="panel-results" role="tabpanel" aria-labelledby="tab-results" tabindex="0">
+          <div class="section-intro"><h2>Evidence from the research</h2><p>Detection, concentration classification, regression and explainability results, linked to their datasets and methods.</p></div>
+          <div class="result-scope" aria-label="Research result areas"><span>Detection</span><span>Classification</span><span>Regression</span><span>Explainability</span></div><div id="results-list"></div>
+        </section>
+
+        <section class="tab-pane fade" id="panel-resources" role="tabpanel" aria-labelledby="tab-resources" tabindex="0">
+          <div class="section-intro"><h2>The project’s reference library</h2><p>Work plans, dataset descriptions and research sources in one place. Literature supports work across all six packages.</p></div><div id="resources-list"></div>
+        </section>
+
+        <section class="tab-pane fade" id="panel-journal" role="tabpanel" aria-labelledby="tab-journal" tabindex="0">
+          <div class="section-intro"><h2>A record of direction and decisions</h2><p>Planning decisions, meeting notes and follow-up actions. Each record keeps its date and context.</p></div><div id="journal-list" class="journal-list"></div>
+        </section>
+      </div>
+      <footer class="workspace-footer"><span>Peak Deconvolution <span aria-hidden="true">/</span> Team 2</span><span>Content updated <time id="footer-updated">—</time></span></footer>
+    </main>
+  </div>
+</body>
+</html>

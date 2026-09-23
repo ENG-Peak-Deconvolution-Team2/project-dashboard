@@ -1,0 +1,353 @@
+{
+  "project": {
+    "name": "Peak Deconvolution",
+    "description": "Voltammetric data acquisition, predictive modelling and explainable analysis.",
+    "lead": "Hasan Oruçlar",
+    "updated": "2026-09-23",
+    "planVerified": "2026-09-23",
+    "weeks": 15,
+    "startDate": null,
+    "repositoryUrl": "https://github.com/ENG-Peak-Deconvolution-Team2/project-dashboard",
+    "siteUrl": "https://eng-peak-deconvolution-team2.github.io/project-dashboard/"
+  },
+  "teams": [
+    {
+      "id": "team1",
+      "name": "Team 1",
+      "approach": "Deep learning",
+      "members": [
+        { "name": "Sıla Elif Kocasaraç", "department": "BME" },
+        { "name": "Batu Arıbakır", "department": "EEE" }
+      ]
+    },
+    {
+      "id": "team2",
+      "name": "Team 2",
+      "approach": "Machine learning",
+      "members": [
+        { "name": "Hıba Berchane", "department": "BME" },
+        { "name": "Hasan Oruçlar", "department": "EEE" }
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "id": "WP1",
+      "name": "Local Dataset Acquisition",
+      "shortName": "Acquisition",
+      "summary": "Plan, perform and organise the local voltammetric experiment set into a labelled dataset.",
+      "color": "#009289",
+      "tasks": [
+        {
+          "id": "WP1.1",
+          "name": "Experimental design and dataset specification",
+          "weeks": [2, 3],
+          "owner": "BME+EEE",
+          "modelling": false,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        },
+        {
+          "id": "WP1.2",
+          "name": "Solution and experimental condition preparation",
+          "weeks": [2, 3, 4],
+          "owner": "BME lead",
+          "modelling": false,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        },
+        {
+          "id": "WP1.3",
+          "name": "Voltammetric measurements",
+          "weeks": [2, 3, 4, 5, 6],
+          "owner": "BME lead",
+          "modelling": false,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        },
+        {
+          "id": "WP1.4",
+          "name": "Measurement quality control, labelling and dataset organisation",
+          "weeks": [3, 4, 5, 6],
+          "owner": "BME lead",
+          "modelling": false,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        }
+      ]
+    },
+    {
+      "id": "WP2",
+      "name": "Existing Dataset Preparation and Preprocessing",
+      "shortName": "Preprocessing",
+      "summary": "Review the existing dataset, define data splits and build a validated preprocessing pipeline.",
+      "color": "#00578c",
+      "tasks": [
+        {
+          "id": "WP2.1",
+          "name": "Data, analyte information and target label review",
+          "weeks": [2],
+          "owner": "BME lead",
+          "modelling": false,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        },
+        {
+          "id": "WP2.2",
+          "name": "Training, validation and test split definition",
+          "weeks": [2, 3],
+          "owner": "EEE lead",
+          "modelling": false,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        },
+        {
+          "id": "WP2.3",
+          "name": "Preprocessing pipeline preparation and validation",
+          "weeks": [2, 3],
+          "owner": "EEE lead",
+          "modelling": false,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        }
+      ]
+    },
+    {
+      "id": "WP3",
+      "name": "Model Development and Evaluation",
+      "shortName": "Modelling",
+      "summary": "Develop and compare detection and quantification models on the existing dataset.",
+      "color": "#726dc4",
+      "tasks": [
+        {
+          "id": "WP3.1",
+          "name": "Analyte presence detection",
+          "weeks": [2, 3, 4],
+          "owner": "EEE lead",
+          "modelling": true,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        },
+        {
+          "id": "WP3.2",
+          "name": "Quantification — concentration classification",
+          "weeks": [4, 5],
+          "owner": "EEE lead",
+          "modelling": true,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        },
+        {
+          "id": "WP3.3",
+          "name": "Quantification — concentration regression",
+          "weeks": [5, 6],
+          "owner": "EEE lead",
+          "modelling": true,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        },
+        {
+          "id": "WP3.4",
+          "name": "Model comparison and pipeline finalisation",
+          "weeks": [7],
+          "owner": "BME+EEE",
+          "modelling": false,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        }
+      ]
+    },
+    {
+      "id": "WP4",
+      "name": "Model Adaptation and Evaluation on Local Data",
+      "shortName": "Adaptation",
+      "summary": "Prepare the local dataset and adapt and evaluate the developed pipelines on it.",
+      "color": "#772f6f",
+      "tasks": [
+        {
+          "id": "WP4.1",
+          "name": "New-data preparation, splitting and preprocessing",
+          "weeks": [6, 7],
+          "owner": "EEE lead",
+          "modelling": false,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        },
+        {
+          "id": "WP4.2",
+          "name": "Detection pipeline adaptation and retraining",
+          "weeks": [9, 10],
+          "owner": "EEE lead",
+          "modelling": true,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        },
+        {
+          "id": "WP4.3",
+          "name": "Quantification — classification pipeline adaptation and retraining",
+          "weeks": [9, 10, 11],
+          "owner": "EEE lead",
+          "modelling": true,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        },
+        {
+          "id": "WP4.4",
+          "name": "Quantification — regression pipeline adaptation and retraining",
+          "weeks": [10, 11],
+          "owner": "EEE lead",
+          "modelling": true,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        },
+        {
+          "id": "WP4.5",
+          "name": "Result evaluation and comparison",
+          "weeks": [12, 13, 14],
+          "owner": "BME+EEE",
+          "modelling": false,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        }
+      ]
+    },
+    {
+      "id": "WP5",
+      "name": "Explainable AI (XAI)",
+      "shortName": "Explainability",
+      "summary": "Select an explanation method, run it on the project models and test its faithfulness and stability.",
+      "color": "#946200",
+      "tasks": [
+        {
+          "id": "WP5.1",
+          "name": "XAI method selection and setup",
+          "weeks": [3, 4, 5, 6, 7],
+          "owner": "EEE lead",
+          "modelling": false,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        },
+        {
+          "id": "WP5.2",
+          "name": "Explanation runs on project models",
+          "weeks": [5, 6, 7, 9, 10, 11, 12],
+          "owner": "EEE lead",
+          "modelling": false,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        },
+        {
+          "id": "WP5.3",
+          "name": "Explanation faithfulness and stability testing",
+          "weeks": [13, 14, 15],
+          "owner": "BME+EEE",
+          "modelling": false,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        }
+      ]
+    },
+    {
+      "id": "WP6",
+      "name": "Web Interface Development and Integration",
+      "shortName": "Interface",
+      "summary": "Build the web interface, integrate the pipelines, add result queries and document the system.",
+      "color": "#bb565a",
+      "tasks": [
+        {
+          "id": "WP6.1",
+          "name": "Web interface design and data upload",
+          "weeks": [2, 3, 4],
+          "owner": "BME+EEE",
+          "modelling": false,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        },
+        {
+          "id": "WP6.2",
+          "name": "Pipeline integration and result visualisation",
+          "weeks": [4, 5, 6, 7, 9, 10, 11, 12],
+          "owner": "EEE lead",
+          "modelling": false,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        },
+        {
+          "id": "WP6.3",
+          "name": "Chatbot integration (result queries)",
+          "weeks": [11, 12],
+          "owner": "EEE lead",
+          "modelling": false,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        },
+        {
+          "id": "WP6.4",
+          "name": "End-to-end testing and documentation",
+          "weeks": [13, 14, 15],
+          "owner": "BME+EEE",
+          "modelling": false,
+          "status": { "team1": "Not reported", "team2": "Not reported" },
+          "outputs": []
+        }
+      ]
+    }
+  ],
+  "milestones": [
+    { "week": 3, "title": "Progress presentation", "type": "presentation" },
+    { "week": 5, "title": "Progress presentation", "type": "presentation" },
+    { "week": 7, "title": "Progress presentation", "type": "presentation" },
+    { "week": 8, "title": "Midterm", "type": "midterm" },
+    { "week": 10, "title": "Progress presentation", "type": "presentation" },
+    { "week": 12, "title": "Progress presentation", "type": "presentation" },
+    { "week": 14, "title": "Progress presentation", "type": "presentation" }
+  ],
+  "experiments": [],
+  "resources": [
+    {
+      "id": "gantt",
+      "type": "document",
+      "title": "Project work plan",
+      "description": "15-week work packages and team assignments.",
+      "href": "documents/PeakDeconv_Gantt_Chart.xlsx",
+      "label": "Download Excel"
+    },
+    {
+      "id": "dataset-acs-ml-biomarker",
+      "type": "dataset",
+      "title": "ACS-ML-Biomarker dataset",
+      "description": "Reference data for preprocessing, model development and evaluation in WP2 and WP3.",
+      "href": null,
+      "label": null
+    },
+    {
+      "id": "dataset-local",
+      "type": "dataset",
+      "title": "Local dataset",
+      "description": "Voltammetric measurements planned in WP1, followed by model adaptation and evaluation in WP4.",
+      "href": null,
+      "label": null
+    }
+  ],
+  "decisions": [
+    {
+      "date": "2026-09-22",
+      "title": "Literature across work packages",
+      "summary": "Literature review supports all packages and is not a separate work package.",
+      "actions": []
+    },
+    {
+      "date": "2026-09-22",
+      "title": "XAI package established in place of natural language interaction",
+      "summary": "The old natural language interaction package was replaced by WP5 · Explainable AI (XAI) with three sub-tasks; the XAI method choice is intentionally left open.",
+      "actions": []
+    },
+    {
+      "date": "2026-09-22",
+      "title": "Natural language interaction reduced to one chatbot task",
+      "summary": "The former natural language interaction scope was reduced to the single task WP6.3 · Chatbot integration (result queries), result queries only.",
+      "actions": []
+    }
+  ],
+  "meetings": []
+}
