@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#172344">
 <meta name="description" content="Team 2's Peak Deconvolution project: work programme, presentation expectations, research results and risk management.">
-<title>Signal Observatory | Team 2</title>
+<title>Peak Deconvolution | Team 2</title>
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/fira-sans-400.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="preload" href="assets/fonts/source-serif-600.ttf" as="font" type="font/ttf" crossorigin>
@@ -13,10 +13,8 @@
 <link rel="stylesheet" href="style.css?v=20260924-5">
 <script src="assets/bootstrap.bundle.min.js" defer></script>
 <script src="app.js?v=20260924-4" defer></script>
-<link rel="stylesheet" href="experimental.css?v=1">
-<script src="experimental.js?v=1" defer></script>
 </head>
-<body class="experimental" data-view="overview" data-motion="off">
+<body data-view="overview">
 <a class="skip-link" href="#main">Skip to content</a>
 <aside class="sidebar">
  <a class="brand" href="#overview" data-go="overview"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M3 28h6c5 0 5-20 10-20s5 20 10 20h8M4 33h32"/></svg></span><span>Peak Deconvolution<small>ENG project · Team 2</small></span></a>
@@ -31,27 +29,9 @@
  <div class="sidebar-bottom"><span class="sidebar-team">02</span><div><strong>Team 2</strong><span>Machine learning</span></div><p>A 15-week programme in voltammetric signal analysis.</p><a href="documents/PeakDeconv_Gantt_Chart.xlsx" download>Download Gantt workbook <span aria-hidden="true">↗</span></a></div>
 </aside>
 <div class="workspace">
- <div class="edition-bar"><span class="edition-label"><i aria-hidden="true"></i> Signal observatory <span>/ Experiment 01</span></span><div class="edition-actions"><a href="./">Saved favorite <span aria-hidden="true">&#8599;</span></a><button id="motion-toggle" type="button" aria-pressed="false">Pause motion</button></div></div>
- <header class="project-masthead experimental-hero">
-  <div class="orbital-glow" aria-hidden="true"></div>
-  <div class="masthead-copy"><p class="project-context"><span>Team 02</span> Engineering / Machine learning</p><a href="#overview" data-go="overview" class="project-title">Peak<br><em>Deconvolution</em><span class="title-dot">.</span></a><p class="project-description">Find the structure.<br>Reveal the signal.</p><div class="project-tags"><span>Experimental data</span><span>Interpretable predictions</span></div></div>
-  <div class="signal-console">
-   <div class="console-heading"><span><i aria-hidden="true"></i> Signal playground</span><span>01 &mdash; 03</span></div>
-   <svg id="signal-playground" viewBox="0 0 480 260" role="img" aria-labelledby="playground-title playground-description">
-    <title id="playground-title">Illustrative overlapping signal peaks</title><desc id="playground-description">Three coloured component curves and their combined curve. Adjust peak separation below to explore overlap. This is an illustration, not measured project data.</desc>
-    <defs><linearGradient id="exp-signal-fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#8fead7" stop-opacity=".2"/><stop offset="1" stop-color="#8fead7" stop-opacity="0"/></linearGradient></defs>
-    <path class="console-grid" d="M20 40h440M20 85h440M20 130h440M20 175h440M20 220h440M60 20v220M120 20v220M180 20v220M240 20v220M300 20v220M360 20v220M420 20v220"/>
-    <path id="signal-area" fill="url(#exp-signal-fill)" d="M20 220H460Z"/>
-    <path class="component component-a" id="component-a" d="M20 220H460"/><path class="component component-b" id="component-b" d="M20 220H460"/><path class="component component-c" id="component-c" d="M20 220H460"/>
-    <path id="combined-signal" d="M20 220H460"/>
-    <g class="signal-scanner" aria-hidden="true"><line id="scan-line" x1="20" x2="20" y1="24" y2="220"/><circle id="scan-halo" cx="20" cy="220" r="11"/><circle id="scan-point" cx="20" cy="220" r="3.5"/></g>
-    <text x="20" y="248">OVERLAP</text><text x="460" y="248" text-anchor="end">RESOLUTION</text>
-   </svg>
-   <div class="console-legend" aria-hidden="true"><span>Combined signal</span><span>Component traces</span></div>
-   <div class="separation-control"><label for="peak-separation">Peak separation</label><output id="separation-value" for="peak-separation">Blended</output><input id="peak-separation" type="range" min="0" max="100" value="35" aria-describedby="signal-note"></div>
-   <p id="signal-note">Illustrative signal &middot; not measured data</p>
-  </div>
-  <div class="hero-footnote" aria-hidden="true"><span>FROM COMPLEXITY TO CLARITY</span><span class="hero-rule"></span><span>TEAM 02 / ENG</span></div>
+ <header class="project-masthead">
+  <div class="masthead-copy"><p class="project-context"><span>Team 02</span> Engineering project</p><a href="#overview" data-go="overview" class="project-title">Peak Deconvolution<span class="title-dot">.</span></a><p class="project-description">From voltammetric signals to interpretable predictions.</p><div class="project-tags"><span>Machine learning</span><span>Experimental data</span><span>Explainability</span></div></div>
+  <div class="signal-art" aria-hidden="true"><svg viewBox="0 0 480 210" fill="none"><defs><linearGradient id="signal-fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#79dedc" stop-opacity=".32"/><stop offset="1" stop-color="#79dedc" stop-opacity="0"/></linearGradient></defs><path class="signal-grid" d="M0 40h480M0 85h480M0 130h480M0 175h480M70 0v210M150 0v210M230 0v210M310 0v210M390 0v210"/><path d="M0 180C40 180 60 180 86 175C117 169 113 51 143 51C173 51 160 170 201 171C230 172 224 103 250 102C282 102 265 153 294 152C324 150 316 20 348 20C381 20 365 161 408 174C426 180 449 180 480 180V210H0Z" fill="url(#signal-fill)"/><path class="signal-line" pathLength="1000" d="M0 180C40 180 60 180 86 175C117 169 113 51 143 51C173 51 160 170 201 171C230 172 224 103 250 102C282 102 265 153 294 152C324 150 316 20 348 20C381 20 365 161 408 174C426 180 449 180 480 180"/><path class="signal-secondary" d="M0 183C64 183 99 183 114 165C135 140 130 93 150 94C176 93 170 169 207 176C262 186 300 174 314 150C339 105 328 62 352 65C375 68 374 153 405 175C430 184 452 183 480 183"/><circle cx="143" cy="51" r="5"/><circle cx="348" cy="20" r="5"/></svg></div>
  </header>
  <section class="people-section team-spotlight" aria-labelledby="team-heading">
   <div class="team-intro"><span class="team-emblem" aria-hidden="true">02</span><div><span class="section-eyebrow">The people behind the project</span><h2 id="team-heading">Our team</h2></div></div>

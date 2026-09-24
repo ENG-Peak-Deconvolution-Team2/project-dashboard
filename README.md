@@ -182,21 +182,13 @@ within four seconds. Effects are disabled for reduced-motion preferences and
 printing; content never depends on an observer or animation to become available.
 
 
-## Saved favorite and experimental edition
+## Saved favorite and former experimental address
 
-The root `index.html` remains the saved favorite from commit `2885b94`, also
-pinned by the publication tag `favorite-2026-09-24`. Its HTML, CSS, application
-script and project JSON are unchanged by this experiment.
+The light theme from commit `2885b94` is the selected design, pinned by the
+publication tag `favorite-2026-09-24`. Both `index.html` and `experimental.html`
+now show that same dashboard, so the previously shared experiment link remains
+usable. Team placement and the restrained CSS transitions are retained.
 
-Open `experimental.html` for Signal Observatory: a midnight palette, ambient
-orbital lighting, flowing component traces, a scanning signal point, an initial
-peak-separation animation, pointer lighting and subtle card tilt, and staggered
-page entrances. The peak slider takes over from the initial animation on input.
-The signal is a labelled illustration, not measured data or model output.
-
-The experiment reuses Bootstrap, native CSS/SVG, requestAnimationFrame and the
-Web Animations API; there is no extra runtime library. `experimental.js` owns
-only visual interaction. The five static panels share the existing `app.js`
-and project JSON. Pause motion is stored locally, reduced-motion preferences
-are respected, and the scan loop stops when the hero or page is not visible.
-The Saved favorite link returns to the main site.
+The interactive signal playground, midnight/neon theme, pointer lighting and
+card tilt have been removed, together with their experimental CSS and script.
+The previous experiment remains in Git history at commit `0d8017e`.
