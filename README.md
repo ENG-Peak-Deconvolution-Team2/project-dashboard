@@ -2,10 +2,10 @@
 
 [Open dashboard](https://eng-peak-deconvolution-team2.github.io/project-dashboard/) · [Edit project data](https://github.com/ENG-Peak-Deconvolution-Team2/project-dashboard/edit/main/data/project.json)
 
-**Last verified: 2026-09-23.**
+**Last verified: 2026-09-24.**
 
 An English project dashboard exclusively for **Team 2 — Machine learning**.
-Members: Hıba Berchane (BME) and Hasan Oruçlar (EEE, project lead).
+Members: Hıba Berchane (BME) and Hasan Oruçlar (EEE), presented with equal prominence.
 
 ## Sections
 
@@ -42,7 +42,8 @@ browser-local content storage.
   inferred. `suggestedOwner` identifies a proposed departmental lead.
 - The original Gantt workbook is included unchanged in `documents/`. It retains
   its original sheets; the dashboard itself displays only Team 2.
-- Hasan Oruçlar's project-lead role follows `plan/excel/PROJE_BAGLAMI.md`.
+- The dashboard presents both members equally, without a project-lead label,
+  following the project owner's display decision on 2026-09-24.
   The three historical decisions follow
   `plan/excel/WP1_literature_review_cikarildi.md` (2026-09-22).
 - Excel changes are not imported automatically. Update JSON and the downloadable
@@ -123,7 +124,7 @@ They do not amend scientific protocols or authorise changes to project scope.
   Use null links for descriptions without a downloadable or linked source.
 - `decisions` and `meetings`: `{date, title, summary, actions: []}`.
   Actions: `{title, owner, due, status}`.
-- `project`: name, description, lead, updated, planVerified, weeks, startDate,
+- `project`: name, description, updated, planVerified, weeks, startDate,
   repositoryUrl and siteUrl. The start date remains null until confirmed.
 
 All JSON text is rendered as text, and links are restricted to HTTP(S) or

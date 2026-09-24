@@ -10,7 +10,7 @@
  * Public data schema (fetched from "data/project.json"):
  * {
  *   "project": {
- *     "name": string, "description": string, "lead": string,
+ *     "name": string, "description": string,
  *     "updated": "YYYY-MM-DD",            // last content update (footer)
  *     "planVerified": "YYYY-MM-DD",
  *     "weeks": number,                    // planned weeks, e.g. 15
@@ -386,7 +386,6 @@ function renderTeams() {
   const box = byId("overview-team");
   if (!box) return;
   clear(box);
-  const lead = data.project && data.project.lead;
   for (const team of scopeTeams()) {
     const card = el("div", "team-card");
     card.dataset.team = team.id;
@@ -398,7 +397,6 @@ function renderTeams() {
     for (const m of team.members || []) {
       const li = el("li", "team-member");
       const name = el("span", "member-name", m.name);
-      if (lead && m.name === lead) name.appendChild(el("span", "lead-badge", "Project lead"));
       const avatar = el("span", "member-avatar", m.name.split(/\s+/).map(part => part[0]).slice(0, 2).join(""));
       avatar.setAttribute("aria-hidden", "true");
       li.append(avatar, name, el("span", "member-dept", m.department || ""));

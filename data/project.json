@@ -2,8 +2,7 @@
   "project": {
     "name": "Peak Deconvolution",
     "description": "Voltammetric data acquisition, predictive modelling and explainable analysis.",
-    "lead": "Hasan Oruçlar",
-    "updated": "2026-09-23",
+    "updated": "2026-09-24",
     "planVerified": "2026-09-23",
     "weeks": 15,
     "startDate": null,
