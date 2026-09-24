@@ -174,3 +174,9 @@ cover overflow, fonts, navigation, direct routes, history, planning-week changes
 the midterm gap, presentation links and package links. Static validation checks
 unique IDs, panel/route correspondence, local assets, JavaScript syntax, exact
 task-plan agreement with Excel and the unchanged downloadable workbook.
+
+Motion uses native CSS alongside the existing Bootstrap tabs: a finite signal
+trace and light sweep, brief peak pulses, section entrances, staggered scope
+cards, disclosure entrances and pointer hover feedback. Intro effects finish
+within four seconds. Effects are disabled for reduced-motion preferences and
+printing; content never depends on an observer or animation to become available.

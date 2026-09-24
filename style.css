@@ -52,3 +52,35 @@ body[data-view="results"] .workspace-controls,body[data-view="journal"] .workspa
 @media(max-width:1250px){.team-spotlight{grid-template-columns:1fr;gap:17px;padding:21px 23px}.team-intro .section-eyebrow{max-width:none}.team-intro .team-emblem{width:40px;height:43px;font-size:1.5rem}.team-intro h2{font-size:1.3rem}.team-intro .section-eyebrow{margin-bottom:1px}}
 @media(max-width:650px){.team-spotlight{margin-top:12px;padding:20px 18px;gap:17px;border-radius:14px}.team-spotlight .team-members{grid-template-columns:1fr;gap:10px}.team-spotlight .team-member{padding:13px;gap:12px}.team-spotlight .member-avatar{width:43px;height:43px}.team-spotlight .member-name{font-size:.9375rem}.team-spotlight .member-dept{font-size:.75rem;max-width:27ch;margin-top:3px}}
 @media print{.team-spotlight{break-inside:avoid;background:white;box-shadow:none}.team-spotlight:before,.team-spotlight:after{display:none}}
+
+/* Native, finite motion; no extra library or hidden-content reveal system. */
+@media screen and (prefers-reduced-motion:no-preference){
+ @keyframes signal-draw{from{stroke-dashoffset:1000}to{stroke-dashoffset:0}}
+ @keyframes signal-travel{from{stroke-dashoffset:40}to{stroke-dashoffset:0}}
+ @keyframes signal-beacon{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.35);opacity:.55}}
+ @keyframes masthead-light{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+ @keyframes content-arrive{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+ @keyframes team-accent{from{background-position:100% 0}to{background-position:0 0}}
+ .signal-line{stroke-dasharray:1000;animation:signal-draw 2.4s cubic-bezier(.22,1,.36,1) both}
+ .signal-secondary{animation:signal-travel 3.5s ease-out}
+ .signal-art circle{transform-box:fill-box;transform-origin:center;animation:signal-beacon 1.8s ease-in-out 2}
+ .signal-art circle:last-child{animation-delay:.35s}
+ .project-masthead:after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(110deg,transparent 25%,#c6f3ec0b 48%,transparent 70%);animation:masthead-light 2.8s ease-in-out both}
+ .team-spotlight:before{background-size:200% 100%;animation:team-accent 2.8s ease-out}
+ .team-spotlight .team-member{animation:content-arrive .5s ease-out backwards}
+ #project-panels>.tab-pane.active{animation:content-arrive .32s ease-out}
+ #panel-overview.active .stat{animation:content-arrive .42s ease-out backwards}
+ #panel-overview.active .stat:nth-child(2){animation-delay:45ms}
+ #panel-overview.active .stat:nth-child(3){animation-delay:90ms}
+ #panel-overview.active .stat:nth-child(4){animation-delay:135ms}
+ .plan-group[open]>.group-content,.work-package[open]>.package-body{animation:content-arrive .25s ease-out}
+ .plan-group>summary:after{transition:transform .22s ease}
+ .project-nav .nav-link{transition:background .2s,color .2s,transform .2s,box-shadow .2s}
+ .team-spotlight .team-member,.stat,.presentation-card,.risk-card,.review-link,.presentation-stop,.focus-item{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+ @media(hover:hover) and (pointer:fine){
+  .team-spotlight .team-member:hover,.stat:hover,.presentation-card:hover,.risk-card:hover{transform:translateY(-3px);box-shadow:0 10px 25px #26365513;border-color:#b9afd2}
+  .project-nav .nav-link:hover{transform:translateX(3px)}
+  .review-link:hover,.presentation-stop:hover,.focus-item:hover{transform:translateY(-2px);box-shadow:0 6px 16px #26365516}
+ }
+ .review-link:focus-visible,.presentation-stop:focus-visible{transform:translateY(-2px)}
+}
