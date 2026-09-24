@@ -12,17 +12,19 @@ Members: Hıba Berchane (BME) and Hasan Oruçlar (EEE), presented with equal pro
 | Section | Route | Content |
 |---|---|---|
 | Overview | #overview | Scope, programme timeline, next presentation, team and selected-week tasks |
-| Plan & schedule | #schedule | All 23 tasks across the 15-week plan |
-| Work packages | #packages | Six packages, task responsibilities, statuses and output links |
+| Project plan | #plan | Gantt schedule, work packages and risk/solution records in three expandable sections |
 | Presentations | #presentations | Weeks 3, 5, 7, 10, 12 and 14: proposed expectations and evidence |
-| Risks & solutions | #risks | Potential risks, early warnings, responses and fallback plans |
-| Experiments & results | #results | Team 2 experiment records |
-| Resources | #resources | Planning workbook, dataset descriptions and literature |
-| Meetings & decisions | #journal | Historical planning decisions and recorded meetings |
+| Results & resources | #results | Experiment records, planning workbook, datasets and literature |
+| Project journal | #journal | Historical planning decisions and recorded meetings |
 
-The eight panel shells and their navigation buttons are static HTML. Content
+The five panel shells and their navigation buttons are static HTML. Content
 is rendered from `data/project.json`; there is no backend, browser editor or
 browser-local content storage.
+
+Project plan uses native expandable sections, without additional tabs. Existing
+links to `#schedule`, `#packages`, `#risks` and `#resources` still open the relevant
+section within its new parent page. Package links also expand the requested
+work package. Navigation does not clone or move any panels at runtime.
 
 ## Plan authority and interpretation
 
@@ -157,7 +159,7 @@ Earlier design research used [EMBL's guidelines](https://www.embl.org/guidelines
 and [frontend-design guidance](https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md);
 these are references, not institutional affiliations.
 
-All eight sections are checked in Chrome at desktop and mobile widths. Checks
+All five sections are checked in Chrome at desktop and mobile widths. Checks
 cover overflow, fonts, navigation, direct routes, history, planning-week changes,
 the midterm gap, presentation links and package links. Static validation checks
 unique IDs, panel/route correspondence, local assets, JavaScript syntax, exact

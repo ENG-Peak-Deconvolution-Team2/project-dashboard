@@ -46,7 +46,13 @@
 "use strict";
 
 const DATA_URL = "data/project.json";
-const ROUTES = ["overview", "schedule", "packages", "presentations", "risks", "results", "resources", "journal"];
+const ROUTES = ["overview", "plan", "presentations", "results", "journal"];
+const ROUTE_ALIASES = {
+  schedule: { route: "plan", section: "plan-schedule" },
+  packages: { route: "plan", section: "plan-packages" },
+  risks: { route: "plan", section: "plan-risks" },
+  resources: { route: "results", section: "research-resources" }
+};
 const WEEKS_FALLBACK = 15;
 const DEFAULT_WEEK = 2;
 
@@ -716,9 +722,19 @@ function activeRoute() {
   return b ? b.dataset.route : "overview";
 }
 
-function routeFromHash() {
-  const h = location.hash.replace(/^#/, "");
-  return ROUTES.includes(h) ? h : "overview";
+function resolveRoute(value) {
+  if (ROUTES.includes(value)) return { route: value };
+  return Object.hasOwn(ROUTE_ALIASES, value) ? ROUTE_ALIASES[value] : { route: "overview" };
+}
+
+function openSection(id, focus = true) {
+  const section = byId(id);
+  if (!section) return;
+  if (section.tagName === "DETAILS") section.open = true;
+  if (focus) {
+    (section.querySelector(":scope > summary") || section).focus({ preventScroll: true });
+    section.scrollIntoView({ block: "start" });
+  }
 }
 
 function syncChrome(route) {
@@ -747,10 +763,12 @@ function showTab(route) {
 }
 
 function onBrowserNav() {
-  const r = routeFromHash();
+  const target = resolveRoute(location.hash.replace(/^#/, ""));
+  const r = target.route;
   if (location.hash !== "#" + r) history.replaceState(null, "", "#" + r);
   if (r !== activeRoute()) showTab(r);
   else syncChrome(r);
+  if (target.section) openSection(target.section);
 }
 
 function focusPackage(wp) {
@@ -758,13 +776,14 @@ function focusPackage(wp) {
   const details = document.querySelector('.work-package[data-wp="' + esc + '"]');
   if (!details) return;
   const open = () => {
+    openSection("plan-packages", false);
     details.open = true;
     const s = details.querySelector("summary");
     if (s) s.focus();
   };
-  if (activeRoute() === "packages") open();
+  if (activeRoute() === "plan") open();
   else {
-    const btn = document.querySelector('[data-bs-toggle="tab"][data-route="packages"]');
+    const btn = document.querySelector('[data-bs-toggle="tab"][data-route="plan"]');
     if (btn) btn.addEventListener("shown.bs.tab", open, { once: true });
   }
 }
@@ -782,10 +801,12 @@ function wireTabs() {
     const target = e.target && e.target.closest ? e.target.closest("[data-go]") : null;
     if (!target) return;
     if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button !== 0) return;
-    const route = ROUTES.includes(target.dataset.go) ? target.dataset.go : "overview";
+    const destination = resolveRoute(target.dataset.go);
+    const route = destination.route;
     e.preventDefault();
     showTab(route);
-    if (route === "packages" && target.dataset.wp) focusPackage(target.dataset.wp);
+    if (destination.section) openSection(destination.section, !target.dataset.wp);
+    if (route === "plan" && target.dataset.wp) focusPackage(target.dataset.wp);
     if (route === "presentations" && /^\d+$/.test(target.dataset.presentation || "")) {
       const card = document.querySelector('.presentation-card[data-review-week="' + target.dataset.presentation + '"]');
       if (card) {
