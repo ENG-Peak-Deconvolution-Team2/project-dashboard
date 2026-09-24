@@ -164,6 +164,11 @@ headers on the other pages. Plan groups show live content counts and distinct
 colour accents; results and resources sit side by side on wide screens.
 Presentation expectations and risk responses use 16 px body text.
 
+Our team appears directly below the project masthead on all five pages. Equal
+member cards show names and full departments, side by side on larger screens
+and stacked on phones. The band uses a violet-to-teal accent and subtle rings;
+team prominence and overflow are checked at 1440, 900, 390 and 320 px.
+
 All five sections are checked in Chrome at desktop, tablet and mobile widths. Checks
 cover overflow, fonts, navigation, direct routes, history, planning-week changes,
 the midterm gap, presentation links and package links. Static validation checks

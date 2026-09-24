@@ -408,7 +408,11 @@ function renderTeams() {
       const name = el("span", "member-name", m.name);
       const avatar = el("span", "member-avatar", m.name.split(/\s+/).map(part => part[0]).slice(0, 2).join(""));
       avatar.setAttribute("aria-hidden", "true");
-      li.append(avatar, name, el("span", "member-dept", m.department || ""));
+      const departments = { BME: "Biomedical Engineering", EEE: "Electrical & Electronics Engineering" };
+      const department = m.department || "";
+      const details = el("div", "member-details");
+      details.append(name, el("span", "member-dept", departments[department] ? department + " · " + departments[department] : department));
+      li.append(avatar, details);
       ul.appendChild(li);
     }
     card.appendChild(ul);
