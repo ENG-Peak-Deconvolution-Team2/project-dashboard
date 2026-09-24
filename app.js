@@ -211,6 +211,9 @@ function renderStats() {
     );
     box.appendChild(item);
   }
+  byId("schedule-count").textContent = `${totalWeeks()} weeks · ${tasksOf().length} tasks`;
+  byId("package-count").textContent = `${(data.packages || []).length} packages`;
+  byId("risk-count").textContent = `${(data.risks || []).length} potential risks`;
 }
 
 function renderPackagesOverview() {
@@ -562,7 +565,7 @@ function renderResults() {
     const empty = el("div", "empty-state");
     empty.append(
       el("h3", null, "No results recorded yet"),
-      el("p", "result-empty-note", "Team 2’s experiment records will appear here with their dataset, method and evaluation metrics. No experimental outcomes have been recorded yet.")
+      el("p", "result-empty-note", "Experiment records will appear here with their dataset, model and evaluation metrics.")
     );
     box.appendChild(empty);
     return;
@@ -615,13 +618,13 @@ function renderResources() {
   for (const [type, items] of groups) {
     const section = el("section", "resource-section");
     const headings = {document:"Documents", dataset:"Datasets", literature:"Literature"};
-    section.appendChild(el("h2", "resource-section-title", headings[type] || type));
+    section.appendChild(el("h3", "resource-section-title", headings[type] || type));
     const grid = el("div", "resource-grid");
     for (const r of items) {
       const card = el("div", "resource-card");
       card.append(
         el("span", "resource-type", type),
-        el("h3", "resource-title", r.title || "Untitled resource")
+        el("h4", "resource-title", r.title || "Untitled resource")
       );
       if (r.description) card.appendChild(el("p", "resource-description", r.description));
       const safe = safeHref(r.href);
@@ -633,7 +636,7 @@ function renderResources() {
   }
   if (!groups.has("literature")) {
     const section = el("section", "resource-section");
-    section.append(el("h2", "resource-section-title", "Literature"), el("p", null, "No literature references have been added to this workspace yet."));
+    section.append(el("h3", "resource-section-title", "Literature"), el("p", null, "No literature references have been added to this workspace yet."));
     box.appendChild(section);
   }
 }
@@ -738,6 +741,7 @@ function openSection(id, focus = true) {
 }
 
 function syncChrome(route) {
+  document.body.dataset.view = route;
   for (const b of navButtons()) {
     if (b.dataset.route === route) b.setAttribute("aria-current", "page");
     else b.removeAttribute("aria-current");

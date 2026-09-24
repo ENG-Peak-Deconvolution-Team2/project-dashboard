@@ -159,7 +159,12 @@ Earlier design research used [EMBL's guidelines](https://www.embl.org/guidelines
 and [frontend-design guidance](https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md);
 these are references, not institutional affiliations.
 
-All five sections are checked in Chrome at desktop and mobile widths. Checks
+The five-section layout keeps the full masthead on Overview and uses compact
+headers on the other pages. Plan groups show live content counts and distinct
+colour accents; results and resources sit side by side on wide screens.
+Presentation expectations and risk responses use 16 px body text.
+
+All five sections are checked in Chrome at desktop, tablet and mobile widths. Checks
 cover overflow, fonts, navigation, direct routes, history, planning-week changes,
 the midterm gap, presentation links and package links. Static validation checks
 unique IDs, panel/route correspondence, local assets, JavaScript syntax, exact
