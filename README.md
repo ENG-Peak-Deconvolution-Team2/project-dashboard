@@ -180,3 +180,23 @@ trace and light sweep, brief peak pulses, section entrances, staggered scope
 cards, disclosure entrances and pointer hover feedback. Intro effects finish
 within four seconds. Effects are disabled for reduced-motion preferences and
 printing; content never depends on an observer or animation to become available.
+
+
+## Saved favorite and experimental edition
+
+The root `index.html` remains the saved favorite from commit `2885b94`, also
+pinned by the publication tag `favorite-2026-09-24`. Its HTML, CSS, application
+script and project JSON are unchanged by this experiment.
+
+Open `experimental.html` for Signal Observatory: a midnight palette, ambient
+orbital lighting, flowing component traces, a scanning signal point, an initial
+peak-separation animation, pointer lighting and subtle card tilt, and staggered
+page entrances. The peak slider takes over from the initial animation on input.
+The signal is a labelled illustration, not measured data or model output.
+
+The experiment reuses Bootstrap, native CSS/SVG, requestAnimationFrame and the
+Web Animations API; there is no extra runtime library. `experimental.js` owns
+only visual interaction. The five static panels share the existing `app.js`
+and project JSON. Pause motion is stored locally, reduced-motion preferences
+are respected, and the scan loop stops when the hero or page is not visible.
+The Saved favorite link returns to the main site.
