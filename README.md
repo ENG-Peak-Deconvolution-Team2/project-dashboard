@@ -150,14 +150,23 @@ same-site relative paths.
 
 ## Team page
 
-Three buttons open GitHub issue forms in the dashboard repository
-(`.github/ISSUE_TEMPLATE/`). Entries are **public**.
+Hours, assignments and threads are entered on the Team page itself. Each member
+connects once with a personal GitHub token (classic token, `public_repo` scope; the
+Connect dialog links to GitHub's token page with both filled in). The token is kept
+in that browser's local storage only and sent only to `api.github.com`; Disconnect
+removes it. Fine-grained tokens do not work for outside collaborators, so the
+classic token is used. Entries are saved as **public** issues in the dashboard
+repository, in the same format as the issue forms in `.github/ISSUE_TEMPLATE/`,
+which remain usable directly on GitHub.
+
+On the page: saving a week that is already logged updates that entry; assignments
+and threads open in a dialog with their replies, a reply box and close/reopen.
 
 | Form | Label | What the Team page shows |
 |---|---|---|
 | Weekly hours | `type:hours` | One entry per person per week: hours for WP1–WP6 and a note. The member × package table, per-member totals and weeks logged |
 | Assign work | `type:task` | Open assignments (who gave it, to whom, package or task, due week) and the closed count |
-| Start a thread | `type:thread` | The five most recently updated threads with reply counts; replies happen on GitHub, which e-mails participants |
+| Start a thread | `type:thread` | The five most recently updated threads with reply counts; replies are written in the thread dialog; GitHub e-mails participants |
 
 Counting rules:
 
@@ -166,14 +175,14 @@ Counting rules:
   is used only when no type label is present. Two type labels: not counted.
 - One weekly entry per member and week: the most recently updated one counts.
   If it is invalid (hours outside 0–60, a repeated field), that week is not
-  counted until the entry is edited. Correct an entry by editing it.
+  counted until the entry is saved again.
 - Every excluded entry is listed under "not counted" with its reason.
 - Hours are logged time, not a measure of all time worked. Closing an
   assignment does not change a task's status in `project.json`.
 
-Reading: the page reads `api.github.com` without credentials when Team is first
-opened (60 requests per hour per network), keeps a complete read for 10 minutes
-and offers Refresh. A failed, rate-limited or incomplete read (more than 500
+Reading: the page reads `api.github.com` when Team is first opened, without
+credentials (60 requests per hour per network) or with the member's token
+(5,000), keeps a complete read for 10 minutes and offers Refresh. A failed, rate-limited or incomplete read (more than 500
 issues) shows a notice and no totals.
 
 To enable it on the published site, copy `.github/ISSUE_TEMPLATE/` to the

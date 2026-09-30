@@ -730,7 +730,7 @@ function renderAll() {
  */
 const TEAM_PAGE_LIMIT = 5;
 const TEAM_CACHE_MS = 10 * 60 * 1000;
-const team = { status: "idle", items: [], fetchedAt: null, reset: null, inFlight: null };
+const team = { status: "idle", items: [], fetchedAt: null, reset: null, inFlight: null, user: null, signInError: null, signInChecked: false };
 
 function repoPath() {
   const m = String((data && data.project.repositoryUrl) || "").match(/^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+?)(?:\.git)?\/?$/);
@@ -853,7 +853,7 @@ function reduceIssue(i) {
   return { number: i.number, title: i.title || "", state: i.state, body: i.body || "", comments: i.comments || 0,
     login: i.user && i.user.login, assignees: (i.assignees || []).map(a => a.login),
     labels: (i.labels || []).map(l => typeof l === "string" ? l : l.name || ""),
-    updated_at: i.updated_at || "", html_url: i.html_url };
+    updated_at: i.updated_at || "", created_at: i.created_at || "", html_url: i.html_url };
 }
 
 function readTeamCache(repo) {
@@ -884,7 +884,7 @@ async function loadTeam(force) {
     try {
       for (let page = 1; url; page++) {
         if (page > TEAM_PAGE_LIMIT) { team.status = "incomplete"; return; }
-        const res = await fetch(url, { headers: { Accept: "application/vnd.github+json" } });
+        const res = await fetch(url, { headers: apiHeaders(false) });
         if ((res.status === 403 || res.status === 429) && res.headers.get("x-ratelimit-remaining") === "0") {
           const reset = Number(res.headers.get("x-ratelimit-reset"));
           Object.assign(team, { status: "limited", reset: reset ? new Date(reset * 1000) : null });
@@ -915,6 +915,13 @@ function issueLink(issue, label) {
   return a;
 }
 
+function issueButton(issue) {
+  const b = el("button", "issue-link", cleanTitle(issue.title));
+  b.type = "button";
+  b.addEventListener("click", () => openThread(issue));
+  return b;
+}
+
 function newIssueUrl(template) {
   const repo = repoPath();
   return repo ? `https://github.com/${repo}/issues/new?template=${template}` : null;
@@ -922,15 +929,27 @@ function newIssueUrl(template) {
 
 function renderTeamActions() {
   const box = byId("team-actions");
-  if (!box || box.childNodes.length) return;
-  for (const [template, label] of [["weekly-hours.yml", "Log weekly hours"], ["assign-work.yml", "Assign work"], ["start-thread.yml", "Start a thread"]]) {
-    const url = safeHref(newIssueUrl(template));
-    if (!url) continue;
-    const a = anchor(url, label);
-    a.className = "team-action";
-    box.appendChild(a);
+  if (!box) return;
+  clear(box);
+  for (const [label, open] of [["Log weekly hours", openHoursForm], ["Assign work", openTaskForm], ["Start a thread", openThreadForm]]) {
+    const b = el("button", "team-action", label);
+    b.type = "button";
+    b.addEventListener("click", open);
+    box.appendChild(b);
   }
-  box.appendChild(el("p", "team-public-note", "Entries open a GitHub form and are public in the project repository."));
+  const note = el("p", "team-public-note");
+  if (team.user) {
+    note.append("Signed in as " + team.user.member.name + ". Entries are saved as public issues in the project repository. ");
+    const out = el("button", "link-button", "Disconnect");
+    out.type = "button"; out.addEventListener("click", disconnect);
+    note.appendChild(out);
+  } else {
+    note.append("Entries are saved as public issues in the project repository. ");
+    const c = el("button", "link-button", "Connect GitHub");
+    c.type = "button"; c.addEventListener("click", () => openConnect());
+    note.append(c, " once to write from here.");
+  }
+  box.appendChild(note);
 }
 
 function renderTeamStatus(analysis) {
@@ -1061,7 +1080,7 @@ function renderTeamTasks(analysis) {
     const li = el("li", "team-item");
     const pkg = (data.packages || []).find(p => p.id === t.pkg);
     if (pkg) li.style.setProperty("--wp", pkg.color);
-    li.appendChild(issueLink(t.issue, cleanTitle(t.issue.title)));
+    li.appendChild(issueButton(t.issue));
     const meta = [`${firstName(t.from)} → ${t.to ? firstName(t.to) : "unassigned"}`, t.task || t.pkg || "General", t.due ? "due week " + t.due : null].filter(Boolean).join(" · ");
     li.appendChild(el("span", "team-item-meta", meta));
     ul.appendChild(li);
@@ -1087,7 +1106,7 @@ function renderTeamThreads(analysis) {
     const li = el("li", "team-item" + (t.issue.state === "closed" ? " is-closed" : ""));
     const pkg = (data.packages || []).find(p => p.id === t.pkg);
     if (pkg) li.style.setProperty("--wp", pkg.color);
-    li.appendChild(issueLink(t.issue, cleanTitle(t.issue.title)));
+    li.appendChild(issueButton(t.issue));
     const replies = t.issue.comments === 1 ? "1 reply" : t.issue.comments + " replies";
     li.appendChild(el("span", "team-item-meta", [firstName(t.author), t.pkg || "General", replies, "updated " + t.issue.updated_at.slice(0, 10), t.issue.state === "closed" ? "closed" : null].filter(Boolean).join(" · ")));
     ul.appendChild(li);
@@ -1105,6 +1124,331 @@ function renderTeam() {
   renderTeamHours(analysis);
   renderTeamTasks(analysis);
   renderTeamThreads(analysis);
+}
+
+/* ---------------- Team: writing from the dashboard ----------------
+ * Members connect once with their own GitHub token (classic, public_repo scope). The token is
+ * kept in this browser's localStorage only and sent only to api.github.com. Entries are written
+ * as issues in the same issue-form format the parser above reads, so GitHub stays the store.
+ */
+const TOKEN_KEY = "eng-team-token";
+
+function readToken() { try { return localStorage.getItem(TOKEN_KEY) || ""; } catch { return ""; } }
+function saveToken(t) { try { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); } catch { /* private mode */ } }
+
+function apiHeaders(json) {
+  const h = { Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" };
+  const t = readToken();
+  if (t) h.Authorization = "Bearer " + t;
+  if (json) h["Content-Type"] = "application/json";
+  return h;
+}
+
+async function gh(path, method = "GET", body) {
+  const res = await fetch("https://api.github.com" + path, { method, headers: apiHeaders(body !== undefined), body: body === undefined ? undefined : JSON.stringify(body) });
+  if (!res.ok) {
+    let msg = "";
+    try { msg = (await res.json()).message || ""; } catch { /* no body */ }
+    const err = new Error(msg || "GitHub returned " + res.status);
+    err.status = res.status;
+    throw err;
+  }
+  return res.status === 204 ? null : res.json();
+}
+
+async function checkSignIn() {
+  if (!readToken()) { team.user = null; return; }
+  try {
+    const u = await gh("/user");
+    team.user = memberByLogin(u.login) ? { login: u.login, member: memberByLogin(u.login) } : null;
+    if (!team.user) { saveToken(""); team.signInError = `The account ${u.login} is not a member of Team 2.`; }
+  } catch (e) {
+    team.user = null;
+    if (e.status === 401) { saveToken(""); team.signInError = "GitHub rejected this token (wrong, expired or revoked). Create a new one and connect again."; }
+  }
+}
+
+function upsertIssue(raw) {
+  const r = reduceIssue(raw);
+  const i = team.items.findIndex(x => x.number === r.number);
+  if (i >= 0) team.items[i] = r; else team.items.unshift(r);
+  const repo = repoPath();
+  if (repo && team.status === "ok") writeTeamCache(repo, team.items);
+  renderTeam();
+}
+
+/* ---- form bodies (same layout GitHub issue forms produce) ---- */
+const NO_RESPONSE = "_No response_";
+function section(label, value) { return `### ${label}\n\n${String(value || "").trim() || NO_RESPONSE}`; }
+function packageLabel(id) { const p = (data.packages || []).find(x => x.id === id); return p ? `${p.id} · ${p.name}` : "General"; }
+
+function hoursIssue(week, values, note) {
+  const parts = [section("Week", "Week " + week)];
+  for (const p of data.packages || []) parts.push(section(p.id + " hours", values[p.id]));
+  parts.push(section("Note", note));
+  return { title: `[Hours] Week ${week}`, body: parts.join("\n\n") };
+}
+
+/* ---- dialog helpers ---- */
+function dialogBox() { return byId("team-dialog"); }
+
+function openDialog(title, build) {
+  const d = dialogBox();
+  const form = byId("team-form");
+  clear(form);
+  const head = el("div", "dialog-head");
+  const h = el("h2", null, title); h.id = "team-dialog-title"; head.appendChild(h);
+  const x = el("button", "dialog-close", "×");
+  x.type = "button"; x.setAttribute("aria-label", "Close"); x.addEventListener("click", () => d.close());
+  head.appendChild(x);
+  form.appendChild(head);
+  const body = el("div", "dialog-body");
+  form.appendChild(body);
+  build(body, form);
+  if (!d.open) d.showModal();
+  const first = form.querySelector("input, select, textarea, button.primary");
+  if (first) first.focus();
+}
+
+function field(label, control, hint) {
+  const wrap = el("label", "dialog-field");
+  wrap.appendChild(el("span", "dialog-label", label));
+  wrap.appendChild(control);
+  if (hint) wrap.appendChild(el("span", "dialog-hint", hint));
+  return wrap;
+}
+
+function input(type, attrs = {}) {
+  const i = el(type === "textarea" ? "textarea" : "input");
+  if (type !== "textarea") i.type = type;
+  for (const [k, v] of Object.entries(attrs)) i.setAttribute(k, v);
+  return i;
+}
+
+function select(options, value) {
+  const s = el("select", "form-select");
+  for (const [v, label] of options) s.appendChild(option(v, label));
+  if (value !== undefined) s.value = String(value);
+  return s;
+}
+
+function weekOptions() { return Array.from({ length: totalWeeks() }, (_, i) => [String(i + 1), "Week " + (i + 1)]); }
+function packageOptions() { return (data.packages || []).map(p => [p.id, `${p.id} · ${p.name}`]).concat([["General", "General"]]); }
+
+function actionsRow(form, label, onSubmit) {
+  const row = el("div", "dialog-actions");
+  const status = el("p", "dialog-status"); status.setAttribute("role", "status");
+  const cancel = el("button", "btn-quiet", "Cancel"); cancel.type = "button"; cancel.addEventListener("click", () => dialogBox().close());
+  const ok = el("button", "primary", label); ok.type = "submit";
+  row.append(status, cancel, ok);
+  form.appendChild(row);
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    ok.disabled = true; status.textContent = "Saving to GitHub…"; status.classList.remove("is-error");
+    try { await onSubmit(); dialogBox().close(); }
+    catch (err) { status.textContent = "Not saved: " + err.message; status.classList.add("is-error"); }
+    finally { ok.disabled = false; }
+  };
+}
+
+function requireSignIn(then) {
+  if (team.user) return then();
+  openConnect(then);
+}
+
+/* ---- connect ---- */
+function openConnect(then) {
+  openDialog("Connect your GitHub account", (body, form) => {
+    body.appendChild(el("p", null, "Saving from the dashboard needs a GitHub token of your own. You create it once; it stays in this browser only and is sent only to GitHub."));
+    const steps = el("ol", "dialog-steps");
+    const li1 = el("li");
+    const link = anchor("https://github.com/settings/tokens/new?description=Peak%20Deconvolution%20dashboard&scopes=public_repo", "Open GitHub’s token page ↗");
+    li1.append(link, " (the name and the ", el("code", null, "public_repo"), " permission are already filled in).");
+    steps.append(li1, el("li", null, "Choose an expiry, for example 90 days, then press Generate token."), el("li", null, "Copy the token and paste it below."));
+    body.appendChild(steps);
+    const t = input("password", { autocomplete: "off", spellcheck: "false", placeholder: "ghp_…", required: "" });
+    body.appendChild(field("Token", t));
+    if (team.signInError) body.appendChild(el("p", "dialog-status is-error", team.signInError));
+    actionsRow(form, "Connect", async () => {
+      saveToken(t.value.trim());
+      team.signInError = null;
+      await checkSignIn();
+      if (!team.user) throw new Error(team.signInError || "GitHub did not accept this token.");
+      renderTeam();
+      if (then) setTimeout(then, 0);
+    });
+  });
+}
+
+function disconnect() {
+  saveToken(""); team.user = null; renderTeam();
+}
+
+/* ---- weekly hours ---- */
+function ownEntry(week) {
+  if (team.status !== "ok" || !team.user) return null;
+  const mine = team.items.filter(i => issueKind(i) === "hours" && i.login.toLowerCase() === team.user.login.toLowerCase()
+    && weekOf(formFields(i.body, "hours").fields.week) === week);
+  return mine.sort(newestFirst)[0] || null;
+}
+
+function openHoursForm() {
+  requireSignIn(() => openDialog("Log weekly hours", (body, form) => {
+    const week = select(weekOptions(), state.week);
+    body.appendChild(field("Week", week));
+    const grid = el("div", "hours-inputs");
+    const boxes = {};
+    for (const p of data.packages || []) {
+      const i = input("number", { min: "0", max: "60", step: "0.5", inputmode: "decimal", placeholder: "0" });
+      boxes[p.id] = i;
+      const f = field(p.id, i); f.title = p.name; f.style.setProperty("--wp", p.color);
+      grid.appendChild(f);
+    }
+    body.appendChild(grid);
+    const note = input("textarea", { rows: "3", placeholder: "What the time was spent on (optional)" });
+    body.appendChild(field("Note", note));
+    const info = el("p", "dialog-hint");
+    body.appendChild(info);
+    const fill = () => {
+      const existing = ownEntry(Number(week.value));
+      const f = existing ? formFields(existing.body, "hours").fields : {};
+      for (const p of data.packages || []) boxes[p.id].value = f[p.id.toLowerCase() + " hours"] || "";
+      note.value = f.note || "";
+      info.textContent = existing ? `You already logged week ${week.value}; saving updates that entry (#${existing.number}).` : "Leave a package empty for 0 hours. Entries are public in the project repository.";
+    };
+    week.addEventListener("change", fill);
+    fill();
+    actionsRow(form, "Save hours", async () => {
+      const values = {};
+      for (const [id, box] of Object.entries(boxes)) {
+        const v = box.value.trim();
+        if (v && !(Number(v) >= 0 && Number(v) <= 60)) throw new Error(id + " hours must be between 0 and 60.");
+        values[id] = v;
+      }
+      const w = Number(week.value);
+      const { title, body: text } = hoursIssue(w, values, note.value);
+      const existing = ownEntry(w);
+      const repo = repoPath();
+      const saved = existing
+        ? await gh(`/repos/${repo}/issues/${existing.number}`, "PATCH", { title, body: text })
+        : await gh(`/repos/${repo}/issues`, "POST", { title, body: text, labels: ["type:hours"] });
+      upsertIssue(saved);
+    });
+  }));
+}
+
+/* ---- assign work ---- */
+function openTaskForm() {
+  requireSignIn(() => openDialog("Assign work", (body, form) => {
+    const others = teamMembers().filter(m => m !== team.user.member).concat([team.user.member]);
+    const who = select(others.map(m => [m.github, m.name + (m === team.user.member ? " (me)" : "")]));
+    body.appendChild(field("Assign to", who));
+    const title = input("text", { required: "", maxlength: "120", placeholder: "Short description of the work" });
+    body.appendChild(field("Title", title));
+    const row = el("div", "dialog-row");
+    const pkg = select(packageOptions(), "General");
+    const due = select([["", "No due week"]].concat(weekOptions()), "");
+    row.append(field("Work package", pkg), field("Due week", due));
+    body.appendChild(row);
+    const task = select([["", "No specific task"]]);
+    const syncTasks = () => {
+      clear(task); task.appendChild(option("", "No specific task"));
+      const p = (data.packages || []).find(x => x.id === pkg.value);
+      for (const t of (p && p.tasks) || []) task.appendChild(option(t.id, `${t.id} ${t.name}`));
+    };
+    pkg.addEventListener("change", syncTasks); syncTasks();
+    body.appendChild(field("Related task", task));
+    const details = input("textarea", { rows: "4", required: "", placeholder: "What needs to be done" });
+    body.appendChild(field("Details", details));
+    actionsRow(form, "Assign", async () => {
+      const target = memberByLogin(who.value);
+      const text = [section("Assign to", target.name), section("Work package", packageLabel(pkg.value)), section("Related task", task.value),
+        section("Due week", due.value ? "Week " + due.value : "No due week"), section("What needs to be done", details.value)].join("\n\n");
+      const saved = await gh(`/repos/${repoPath()}/issues`, "POST", { title: "[Task] " + title.value.trim(), body: text, labels: ["type:task"], assignees: [target.github] });
+      upsertIssue(saved);
+    });
+  }));
+}
+
+async function setIssueState(issue, stateValue) {
+  const saved = await gh(`/repos/${repoPath()}/issues/${issue.number}`, "PATCH", { state: stateValue });
+  upsertIssue(saved);
+}
+
+/* ---- threads ---- */
+function openThreadForm() {
+  requireSignIn(() => openDialog("Start a thread", (body, form) => {
+    const title = input("text", { required: "", maxlength: "120", placeholder: "Topic" });
+    body.appendChild(field("Topic", title));
+    const pkg = select(packageOptions(), "General");
+    body.appendChild(field("Work package", pkg));
+    const msg = input("textarea", { rows: "5", required: "", placeholder: "Message" });
+    body.appendChild(field("Message", msg));
+    body.appendChild(el("p", "dialog-hint", "Messages are public in the project repository. GitHub e-mails the other member when a thread gets a new message."));
+    actionsRow(form, "Start thread", async () => {
+      const text = [section("Work package", packageLabel(pkg.value)), section("Message", msg.value)].join("\n\n");
+      const saved = await gh(`/repos/${repoPath()}/issues`, "POST", { title: "[Thread] " + title.value.trim(), body: text, labels: ["type:thread"] });
+      upsertIssue(saved);
+    });
+  }));
+}
+
+function message(author, date, text) {
+  const m = el("article", "thread-message");
+  const head = el("div", "thread-message-head");
+  const who = memberByLogin(author);
+  head.append(el("strong", null, who ? who.name : author), el("time", null, String(date || "").slice(0, 16).replace("T", " ")));
+  m.append(head, el("p", null, text));
+  return m;
+}
+
+/* Threads and assignments open in the same view: first message, replies, reply box, close/reopen. */
+function openThread(issue) {
+  const kind = issueKind(issue) === "task" ? "task" : "thread";
+  openDialog(cleanTitle(issue.title), (body, form) => {
+    const f = formFields(issue.body, kind).fields;
+    const pkg = packageOf(f["work package"]);
+    const meta = kind === "task"
+      ? [`${firstName(memberByLogin(issue.login))} → ${f["assign to"] ? f["assign to"].split(/\s+/)[0] : "unassigned"}`, f["related task"] || pkg || "General", weekOf(f["due week"]) ? "due week " + weekOf(f["due week"]) : null]
+      : [pkg || "General"];
+    meta.push(issue.state === "closed" ? "closed" : "open");
+    body.appendChild(el("p", "dialog-hint", meta.filter(Boolean).join(" · ")));
+    const list = el("div", "thread-messages");
+    list.appendChild(message(issue.login, issue.created_at || issue.updated_at, (kind === "task" ? f["what needs to be done"] : f.message) || ""));
+    const loading = el("p", "dialog-hint", "Loading replies…");
+    list.appendChild(loading);
+    body.appendChild(list);
+    gh(`/repos/${repoPath()}/issues/${issue.number}/comments?per_page=100`).then(comments => {
+      loading.remove();
+      for (const c of comments) list.appendChild(message(c.user && c.user.login, c.created_at, c.body || ""));
+    }).catch(() => { loading.textContent = "Replies could not be loaded."; });
+    const reply = input("textarea", { rows: "3", placeholder: team.user ? "Write a reply" : "Connect GitHub to reply" });
+    if (!team.user) reply.disabled = true;
+    body.appendChild(field("Reply", reply));
+    const gh1 = safeHref(issue.html_url);
+    if (gh1) { const a = anchor(gh1, "Open on GitHub ↗"); a.className = "dialog-link"; body.appendChild(a); }
+    if (!team.user) {
+      const row = el("div", "dialog-actions");
+      const c = el("button", "primary", "Connect GitHub"); c.type = "button"; c.addEventListener("click", () => openConnect(() => openThread(issue)));
+      row.appendChild(c); form.appendChild(row);
+      return;
+    }
+    const toggle = el("button", "btn-quiet", issue.state === "open" ? (kind === "task" ? "Mark as closed" : "Close thread") : "Reopen");
+    toggle.type = "button";
+    toggle.addEventListener("click", async () => { toggle.disabled = true; try { await setIssueState(issue, issue.state === "open" ? "closed" : "open"); dialogBox().close(); } catch (e) { toggle.disabled = false; toggle.textContent = "Failed: " + e.message; } });
+    actionsRow(form, "Send reply", async () => {
+      if (!reply.value.trim()) throw new Error("The reply is empty.");
+      const c = await gh(`/repos/${repoPath()}/issues/${issue.number}/comments`, "POST", { body: reply.value.trim() });
+      upsertIssue(Object.assign({}, issueRaw(issue), { comments: issue.comments + 1, updated_at: c.created_at || new Date().toISOString() }));
+    });
+    form.querySelector(".dialog-actions").insertBefore(toggle, form.querySelector(".dialog-actions .btn-quiet"));
+  });
+}
+
+/* reduceIssue() expects the API shape; rebuild it from a reduced record. */
+function issueRaw(r) {
+  return { number: r.number, title: r.title, state: r.state, body: r.body, comments: r.comments, user: { login: r.login },
+    assignees: r.assignees.map(login => ({ login })), labels: r.labels.map(name => ({ name })), updated_at: r.updated_at, created_at: r.created_at, html_url: r.html_url };
 }
 
 /* ---------------- hash / Bootstrap tab navigation ---------------- */
@@ -1135,6 +1479,7 @@ function openSection(id, focus = true) {
 
 function syncChrome(route) {
   document.body.dataset.view = route;
+  if (route === "team" && data && !team.signInChecked) { team.signInChecked = true; checkSignIn().then(renderTeam); }
   if (route === "team" && data && (team.status === "idle" || (team.status === "ok" && Date.now() - team.fetchedAt > TEAM_CACHE_MS))) loadTeam(false);
   for (const b of navButtons()) {
     if (b.dataset.route === route) b.setAttribute("aria-current", "page");
@@ -1255,7 +1600,7 @@ async function initialise() {
     indexMilestones();
     ensureControls();
     renderAll();
-    if (activeRoute() === "team") loadTeam(false);
+    if (activeRoute() === "team") { team.signInChecked = true; checkSignIn().then(renderTeam); loadTeam(false); }
     setStatusAlert("", false);
   } catch (error) {
     clear(byId("overview-update"));

@@ -10,9 +10,9 @@
 <link rel="preload" href="assets/fonts/fira-sans-400.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="preload" href="assets/fonts/source-serif-600.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="stylesheet" href="assets/bootstrap.min.css">
-<link rel="stylesheet" href="style.css?v=20260930-2">
+<link rel="stylesheet" href="style.css?v=20260930-3">
 <script src="assets/bootstrap.bundle.min.js" defer></script>
-<script src="app.js?v=20260930-5" defer></script>
+<script src="app.js?v=20260930-7" defer></script>
 </head>
 <body data-view="overview">
 <a class="skip-link" href="#main">Skip to content</a>
@@ -67,6 +67,7 @@
     <div id="team-status" role="status"></div>
     <section class="surface team-block" id="team-hours" hidden></section>
     <div class="team-columns"><section class="surface team-block" id="team-assignments" hidden></section><section class="surface team-block" id="team-threads" hidden></section></div>
+    <dialog id="team-dialog" class="team-dialog" aria-labelledby="team-dialog-title"><form id="team-form" method="dialog"></form></dialog>
     <details class="plan-group" id="team-journal"><summary><span class="group-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5V4Zm4 5h6m-6 4h6m-6 4h3"/></svg></span><span class="group-heading"><span class="group-title">Decisions &amp; meetings</span><span class="group-description">Planning decisions, meeting notes and agreed follow-up actions.</span></span></summary><div class="group-content"><div id="journal-list" class="journal-list"></div></div></details>
    </section>
   </div>
