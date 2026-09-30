@@ -46,15 +46,16 @@
 "use strict";
 
 const DATA_URL = "data/project.json";
-const ROUTES = ["overview", "plan", "presentations", "results", "journal"];
+const ROUTES = ["overview", "plan", "presentations", "results", "team"];
 const ROUTE_ALIASES = {
   schedule: { route: "plan", section: "plan-schedule" },
   packages: { route: "plan", section: "plan-packages" },
   risks: { route: "plan", section: "plan-risks" },
-  resources: { route: "results", section: "research-resources" }
+  resources: { route: "results", section: "research-resources" },
+  journal: { route: "team", section: "team-journal" }
 };
 const WEEKS_FALLBACK = 15;
-const DEFAULT_WEEK = 2;
+const DEFAULT_WEEK = 3;
 
 let data = null;
 let presentationWeeks = new Set();
@@ -194,26 +195,37 @@ function ensureControls() {
 /* ---------------- renderers ---------------- */
 
 function renderStats() {
-  const box = byId("overview-stats");
-  if (!box) return;
-  clear(box);
-  const stats = [
-    ["Work packages", (data.packages || []).length],
-    ["Planned tasks", tasksOf().length],
-    ["Presentations", presentationWeeks.size],
-    ["Planning weeks", totalWeeks()],
-  ];
-  for (const [label, value] of stats) {
-    const item = el("div", "stat");
-    item.append(
-      el("div", "stat-value", String(value)),
-      el("div", "stat-label", label)
-    );
-    box.appendChild(item);
-  }
   byId("schedule-count").textContent = `${totalWeeks()} weeks · ${tasksOf().length} tasks`;
   byId("package-count").textContent = `${(data.packages || []).length} packages`;
   byId("risk-count").textContent = `${(data.risks || []).length} potential risks`;
+}
+
+/* Latest supervisor-facing progress update: project.updates[] =
+   { date, achievement, evidence: {label, href} | null, next, blocker | null }. */
+function renderUpdate() {
+  const box = byId("overview-update");
+  if (!box) return;
+  clear(box);
+  const updates = (data.project.updates || [])
+    .filter(u => u && u.achievement)
+    .sort((x, y) => String(y.date || "").localeCompare(String(x.date || "")));
+  const u = updates[0];
+  const head = el("div", "update-head");
+  head.appendChild(el("span", "section-eyebrow", "Latest update"));
+  if (u && u.date) head.appendChild(el("time", "update-date", u.date));
+  box.appendChild(head);
+  box.classList.toggle("is-empty", !u);
+  if (!u) {
+    box.appendChild(el("p", "update-empty", "Progress update not yet recorded. Updates appear here with their date, evidence and next step."));
+    return;
+  }
+  const grid = el("dl", "update-grid");
+  grid.append(el("dt", null, "Achieved"), el("dd", null, u.achievement));
+  if (u.next) grid.append(el("dt", null, "Next"), el("dd", null, u.next));
+  if (u.blocker) grid.append(el("dt", null, "Needs attention"), el("dd", "update-blocker", u.blocker));
+  box.appendChild(grid);
+  const link = u.evidence && outputLink(u.evidence);
+  if (link) { link.className = "update-evidence"; box.appendChild(link); }
 }
 
 function renderPackagesOverview() {
@@ -272,6 +284,9 @@ function renderPackagesOverview() {
   }
   table.appendChild(tbody);
   box.appendChild(table);
+  const selected = table.querySelector("thead th:nth-child(" + (state.week + 1) + ")");
+  const overflow = selected ? selected.offsetLeft + selected.offsetWidth - box.clientWidth : 0;
+  box.scrollLeft = overflow > 0 ? overflow + 24 : 0;
 }
 
 function renderFocus() {
@@ -324,6 +339,7 @@ function renderPresentations() {
   const list = byId("presentation-list");
   const rail = byId("presentation-rail");
   const overview = byId("overview-presentation");
+  const openWeeks = new Set([...list.querySelectorAll("details[open]")].map(d => d.dataset.reviewWeek));
   clear(list); clear(rail); clear(overview);
   const reviews = (data.presentations || []).filter(p => presentationWeeks.has(p.week)).sort((a, b) => a.week - b.week);
   const next = reviews.find(p => p.week >= state.week);
@@ -337,40 +353,45 @@ function renderPresentations() {
   const link = reviewLink(next?.week, next ? "View expectations ↗" : "View presentations ↗");
   link.className = "review-link";
   overview.appendChild(link);
+  const keep = list.dataset.rendered === "1";
   for (const p of reviews) {
     const isNext = p === next;
     const stop = el("button", "presentation-stop" + (isNext ? " is-next" : ""));
     stop.type = "button";
     stop.dataset.go = "presentations";
     stop.dataset.presentation = String(p.week);
-    stop.setAttribute("aria-label", "View week " + p.week + " presentation expectations");
+    stop.setAttribute("aria-label", "Open the week " + p.week + " presentation briefing");
     stop.append(el("small", null, "Week"), el("strong", null, String(p.week).padStart(2, "0")));
     rail.appendChild(stop);
-    const card = el("article", "presentation-card" + (isNext ? " is-next" : ""));
+    const card = el("details", "presentation-card" + (isNext ? " is-next" : ""));
     card.dataset.reviewWeek = String(p.week);
-    card.tabIndex = -1;
-    const top = el("div", "presentation-top");
+    card.open = isNext || (keep && openWeeks.has(String(p.week)));
+    const top = el("summary", "presentation-top");
     const medallion = el("span", "week-medallion");
     medallion.append(el("small", null, "WEEK"), el("strong", null, String(p.week).padStart(2, "0")));
-    const heading = el("div");
+    const heading = el("span", "presentation-heading");
     const position = p.week === state.week ? "Selected planning week" : isNext ? "Next in the selected plan" : p.week < state.week ? "Earlier in the plan" : "Later in the plan";
-    heading.append(el("h3", null, p.title), el("span", "review-position", position));
+    heading.append(el("span", "presentation-title", p.title), el("span", "review-position", position));
     top.append(medallion, heading);
-    card.append(top, packageTags(p.packages), el("h4", "card-label", "Expected presentation content"));
+    const body = el("div", "presentation-body");
+    body.append(packageTags(p.packages), el("h4", "card-label", "Expected presentation content"));
     const items = el("ul", "expectation-list");
     for (const expectation of p.expectations || []) items.appendChild(el("li", null, expectation));
-    card.appendChild(items);
+    body.appendChild(items);
     const evidence = el("div", "evidence-box");
     evidence.append(el("h4", "card-label", "Evidence to bring"), el("p", null, p.evidence));
-    const footer = el("div", "review-footer");
-    footer.appendChild(el("span", null, "Presentation record: " + (p.status || "Not recorded")));
-    for (const output of p.outputs || []) {
-      const a = outputLink(output);
-      if (a) footer.appendChild(a);
+    body.appendChild(evidence);
+    const outputs = (p.outputs || []).map(outputLink).filter(Boolean);
+    if (outputs.length) {
+      const footer = el("div", "review-footer");
+      footer.appendChild(el("span", null, "Presentation outputs"));
+      for (const o of outputs) footer.appendChild(o);
+      body.appendChild(footer);
     }
-    card.append(evidence, footer);
+    card.append(top, body);
     list.appendChild(card);
   }
+  list.dataset.rendered = "1";
 }
 
 function renderRisks() {
@@ -474,36 +495,20 @@ function renderSchedule() {
   box.appendChild(table);
 }
 
-function renderWeekly() {
-  const box = byId("weekly-list");
-  if (!box) return;
-  clear(box);
-  const items = tasksInWeek(state.week);
-  if (!items.length) {
-    box.appendChild(el("div", "empty-state", midtermWeeks.has(state.week)
-      ? `Week ${state.week} is the midterm week; no tasks are scheduled.`
-      : `No tasks are scheduled for week ${state.week}.`));
-    return;
-  }
-  for (const { pkg, t } of items) {
-    const item = el("div", "weekly-task");
-    item.style.setProperty("--wp", pkg.color);
-    item.append(
-      el("span", "wp-code", t.id),
-      el("span", "weekly-title", t.name),
-      el("span", "weekly-owner", t.owner || "Not assigned")
-    );
-    const method = modellingLabel(t);
-    if (method) item.appendChild(el("span", "modelling-tag", method));
-    box.appendChild(item);
-  }
-}
-
 function outputLink(o) {
   let href = typeof o === "string" ? o : (o && (o.href || o.url));
   let label = typeof o === "string" ? "Output" : (o && (o.label || o.title)) || "Output";
   const safe = safeHref(href);
   return safe ? anchor(safe, label) : null;
+}
+
+/* Package progress from recorded task statuses; unknown ones stay visible as "not reported". */
+function progressText(tasks, teams) {
+  const statuses = tasks.flatMap(t => teams.map(team => statusFor(t, team.id)));
+  const unknown = statuses.filter(st => st === "Not reported").length;
+  if (!statuses.length || unknown === statuses.length) return "Progress not yet reported";
+  const done = statuses.filter(st => st === "Complete").length;
+  return unknown ? `${done} complete · ${unknown} not reported` : `${done}/${statuses.length} complete`;
 }
 
 function renderPackages() {
@@ -524,11 +529,7 @@ function renderPackages() {
       el("span", "package-title", pkg.name),
       el("span", "package-count", `${(pkg.tasks || []).length} tasks`)
     );
-    const statusParts = teams.map((team) => {
-      const set = [...new Set((pkg.tasks || []).map((t) => statusFor(t, team.id)))];
-      return set.join(", ");
-    });
-    summary.appendChild(el("span", "package-status", statusParts.join(" · ")));
+    summary.appendChild(el("span", "package-status", progressText(pkg.tasks || [], teams)));
     const body = el("div", "package-body");
     if (pkg.summary) body.appendChild(el("p", "package-summary-text", pkg.summary));
     for (const t of pkg.tasks || []) {
@@ -542,11 +543,12 @@ function renderPackages() {
       const statuses = el("span", "task-statuses");
       for (const team of teams) {
         const status = statusFor(t, team.id);
+        if (status === "Not reported") continue;
         const badge = el("span", "task-status status-" + status.toLowerCase().replace(/\s+/g, "-"), status);
         badge.dataset.team = team.id;
         statuses.appendChild(badge);
       }
-      row.appendChild(statuses);
+      if (statuses.childNodes.length) row.appendChild(statuses);
       const outputs = (t.outputs || []).map(outputLink).filter(Boolean);
       if (outputs.length) {
         const span = el("span", "task-outputs");
@@ -567,10 +569,18 @@ function renderResults() {
   const exps = (data.experiments || []).filter(x => x.team === "team2");
   if (!exps.length) {
     const empty = el("div", "empty-state");
-    empty.append(
-      el("h3", null, "No results recorded yet"),
-      el("p", "result-empty-note", "Experiment records will appear here with their dataset, model and evaluation metrics.")
-    );
+    empty.appendChild(el("h3", null, "No results recorded yet"));
+    const first = tasksOf().find(({ t }) => t.modelling);
+    const note = el("p", "result-empty-note");
+    if (first) {
+      const link = anchor("#packages", first.t.id + " " + first.t.name.toLowerCase());
+      link.dataset.go = "packages";
+      link.dataset.wp = first.pkg.id;
+      note.append("The first planned result is ", link, ", scheduled for " + formatWeeks(first.t.weeks).toLowerCase() + ". Each record will show its dataset, split, model and metrics.");
+    } else {
+      note.textContent = "Each record will show its dataset, split, model and metrics.";
+    }
+    empty.appendChild(note);
     box.appendChild(empty);
     return;
   }
@@ -633,14 +643,10 @@ function renderResources() {
       if (r.description) card.appendChild(el("p", "resource-description", r.description));
       const safe = safeHref(r.href);
       if (safe) card.appendChild(anchor(safe, r.label || "Open resource"));
+      else card.appendChild(el("span", "resource-pending", r.pending || "Access pending"));
       grid.appendChild(card);
     }
     section.appendChild(grid);
-    box.appendChild(section);
-  }
-  if (!groups.has("literature")) {
-    const section = el("section", "resource-section");
-    section.append(el("h3", "resource-section-title", "Literature"), el("p", null, "No literature references have been added to this workspace yet."));
     box.appendChild(section);
   }
 }
@@ -674,9 +680,6 @@ function renderJournal() {
     }
     box.appendChild(card);
   }
-  if (!(data.meetings || []).length) {
-    box.appendChild(el("div", "empty-state", "No meetings recorded yet."));
-  }
 }
 
 function renderWeekLabels() {
@@ -703,19 +706,405 @@ function renderMeta() {
 function renderAll() {
   if (!data) return;
   renderStats();
+  renderUpdate();
   renderPackagesOverview();
   renderFocus();
   renderPresentations();
   renderRisks();
   renderTeams();
   renderSchedule();
-  renderWeekly();
   renderPackages();
   renderResults();
   renderResources();
   renderJournal();
+  renderTeam();
   renderWeekLabels();
   renderMeta();
+}
+
+/* ---------------- Team: hours, assignments and threads from GitHub Issues ----------------
+ * Source: issues of the public dashboard repository, read without credentials when the Team
+ * page is first shown. Issue forms (.github/ISSUE_TEMPLATE) write the bodies parsed here.
+ * Only issues opened by the members' GitHub accounts count. Totals are shown only after a
+ * complete read (a terminal page without rel="next"); a partial or failed read shows no numbers.
+ */
+const TEAM_PAGE_LIMIT = 5;
+const TEAM_CACHE_MS = 10 * 60 * 1000;
+const team = { status: "idle", items: [], fetchedAt: null, reset: null, inFlight: null };
+
+function repoPath() {
+  const m = String((data && data.project.repositoryUrl) || "").match(/^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+?)(?:\.git)?\/?$/);
+  return m ? m[1] + "/" + m[2] : null;
+}
+
+function teamMembers() {
+  return ((teamById("team2") || {}).members || []).filter(m => m.github);
+}
+
+function memberByLogin(login) {
+  const l = String(login || "").toLowerCase();
+  return teamMembers().find(m => m.github.toLowerCase() === l) || null;
+}
+
+function firstName(member) { return member ? member.name.split(/\s+/)[0] : "Unknown"; }
+
+const KINDS = ["hours", "task", "thread"];
+
+function issueKind(issue) {
+  const labels = issue.labels.map(l => l.toLowerCase());
+  const labelled = KINDS.filter(kind => labels.includes("type:" + kind));
+  if (labelled.length > 1) return "conflict";
+  if (labelled.length === 1) return labelled[0];
+  return KINDS.find(kind => issue.title.toLowerCase().startsWith("[" + kind + "]")) || null;
+}
+
+/* Issue-form bodies are "### Label\n\nvalue" sections; "_No response_" means empty. Fields are
+   read in order up to the form's free-text field, which keeps everything after its heading, so a
+   heading typed inside a note cannot overwrite an earlier field. Repeated fields are reported. */
+const FREE_TEXT = { hours: "note", task: "what needs to be done", thread: "message" };
+
+function formFields(body, kind) {
+  const fields = {};
+  const duplicates = [];
+  const text = String(body || "").replace(/\r\n/g, "\n");
+  const re = /^### +(.+)$/gm;
+  const heads = [];
+  for (let m; (m = re.exec(text));) heads.push({ key: m[1].trim().toLowerCase(), start: m.index, end: m.index + m[0].length });
+  for (let i = 0; i < heads.length; i++) {
+    const h = heads[i];
+    const free = h.key === FREE_TEXT[kind];
+    const stop = free || i + 1 === heads.length ? text.length : heads[i + 1].start;
+    const value = text.slice(h.end, stop).trim();
+    if (Object.hasOwn(fields, h.key)) { if (!duplicates.includes(h.key)) duplicates.push(h.key); }
+    else fields[h.key] = value === "_No response_" ? "" : value;
+    if (free) break;
+  }
+  return { fields, duplicates };
+}
+
+function packageOf(value) {
+  const m = String(value || "").match(/^(WP\d+)\b/);
+  return m && (data.packages || []).some(p => p.id === m[1]) ? m[1] : null;
+}
+
+function weekOf(value) {
+  const m = String(value || "").match(/^Week (\d+)$/);
+  const w = m ? Number(m[1]) : NaN;
+  return w >= 1 && w <= totalWeeks() ? w : null;
+}
+
+function cleanTitle(title) { return String(title || "").replace(/^\[(hours|task|thread)\]\s*/i, "").trim() || "Untitled"; }
+
+function newestFirst(a, b) {
+  return b.updated_at.localeCompare(a.updated_at) || b.number - a.number;
+}
+
+function analyseIssues(items) {
+  const invalid = [], tasks = [], threads = [], weekly = new Map();
+  let recognised = 0;
+  for (const issue of items) {
+    const kind = issueKind(issue);
+    if (!kind) continue;
+    recognised++;
+    if (kind === "conflict") { invalid.push({ issue, reason: "has more than one type label" }); continue; }
+    const author = memberByLogin(issue.login);
+    if (!author) { invalid.push({ issue, reason: "opened by an account outside the team" }); continue; }
+    const { fields: f, duplicates } = formFields(issue.body, kind);
+    const twice = duplicates.length ? `repeated field${duplicates.length > 1 ? "s" : ""} ${duplicates.map(k => "“" + k.replace(/^wp(\d)/, "WP$1").replace(/^w/, "W") + "”").join(", ")}` : null;
+    if (kind === "hours") {
+      /* A readable week groups the entry even when another field is broken, so a broken
+         correction still supersedes the older entry for that week. */
+      const week = duplicates.includes("week") ? null : weekOf(f.week);
+      if (!week) { invalid.push({ issue, reason: twice || "no valid week" }); continue; }
+      const key = author.github + "|" + week;
+      if (!weekly.has(key)) weekly.set(key, []);
+      weekly.get(key).push({ issue, member: author, week, f, error: twice });
+      continue;
+    }
+    if (twice) { invalid.push({ issue, reason: twice }); continue; }
+    if (kind === "task") {
+      const target = teamMembers().find(m => m.name === f["assign to"]) || memberByLogin(issue.assignees[0]);
+      tasks.push({ issue, from: author, to: target, pkg: packageOf(f["work package"]), due: weekOf(f["due week"]), task: f["related task"] });
+    } else {
+      threads.push({ issue, author, pkg: packageOf(f["work package"]) });
+    }
+  }
+  /* One weekly entry per member: the most recently updated one counts, even when it is invalid. */
+  const hours = [];
+  for (const entries of weekly.values()) {
+    entries.sort((a, b) => newestFirst(a.issue, b.issue));
+    const [latest, ...older] = entries;
+    for (const o of older) invalid.push({ issue: o.issue, reason: `superseded by the newer week ${latest.week} entry #${latest.issue.number}` });
+    const byPackage = {}; let problem = latest.error || null;
+    for (const pkg of problem ? [] : data.packages || []) {
+      const raw = (latest.f[pkg.id.toLowerCase() + " hours"] || "").replace(",", ".");
+      if (!raw) continue;
+      const h = Number(raw);
+      if (!Number.isFinite(h) || h < 0 || h > 60) { problem = pkg.id + " hours must be a number from 0 to 60"; break; }
+      if (h) byPackage[pkg.id] = h;
+    }
+    if (problem) invalid.push({ issue: latest.issue, reason: problem + `; week ${latest.week} is not counted until it is corrected` });
+    else hours.push({ issue: latest.issue, member: latest.member, week: latest.week, byPackage });
+  }
+  return { recognised, hours, invalid, tasks, threads };
+}
+
+function reduceIssue(i) {
+  return { number: i.number, title: i.title || "", state: i.state, body: i.body || "", comments: i.comments || 0,
+    login: i.user && i.user.login, assignees: (i.assignees || []).map(a => a.login),
+    labels: (i.labels || []).map(l => typeof l === "string" ? l : l.name || ""),
+    updated_at: i.updated_at || "", html_url: i.html_url };
+}
+
+function readTeamCache(repo) {
+  try {
+    const c = JSON.parse(sessionStorage.getItem("eng-team:" + repo) || "null");
+    return c && Date.now() - c.at < TEAM_CACHE_MS ? c : null;
+  } catch { return null; }
+}
+
+function writeTeamCache(repo, items) {
+  try { sessionStorage.setItem("eng-team:" + repo, JSON.stringify({ at: Date.now(), items })); } catch { /* optional */ }
+}
+
+async function loadTeam(force) {
+  const repo = repoPath();
+  if (!repo) { team.status = "failed"; renderTeam(); return; }
+  if (team.inFlight) return team.inFlight;
+  const cached = !force && readTeamCache(repo);
+  if (cached) {
+    Object.assign(team, { status: "ok", items: cached.items, fetchedAt: new Date(cached.at) });
+    renderTeam();
+    return;
+  }
+  team.status = "loading"; renderTeam();
+  team.inFlight = (async () => {
+    const items = [];
+    let url = `https://api.github.com/repos/${repo}/issues?state=all&per_page=100`;
+    try {
+      for (let page = 1; url; page++) {
+        if (page > TEAM_PAGE_LIMIT) { team.status = "incomplete"; return; }
+        const res = await fetch(url, { headers: { Accept: "application/vnd.github+json" } });
+        if ((res.status === 403 || res.status === 429) && res.headers.get("x-ratelimit-remaining") === "0") {
+          const reset = Number(res.headers.get("x-ratelimit-reset"));
+          Object.assign(team, { status: "limited", reset: reset ? new Date(reset * 1000) : null });
+          return;
+        }
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const batch = await res.json();
+        if (!Array.isArray(batch)) throw new Error("Unexpected response");
+        for (const i of batch) if (!i.pull_request) items.push(reduceIssue(i));
+        const next = (res.headers.get("link") || "").match(/<([^>]+)>;\s*rel="next"/);
+        url = next ? next[1] : null;
+      }
+      Object.assign(team, { status: "ok", items, fetchedAt: new Date() });
+      writeTeamCache(repo, items);
+    } catch {
+      team.status = "failed";
+    }
+  })();
+  try { await team.inFlight; } finally { team.inFlight = null; renderTeam(); }
+}
+
+function issueLink(issue, label) {
+  const text = label || "#" + issue.number;
+  const href = safeHref(issue.html_url);
+  if (!href) return el("span", "issue-link", text);
+  const a = anchor(href, text);
+  a.className = "issue-link";
+  return a;
+}
+
+function newIssueUrl(template) {
+  const repo = repoPath();
+  return repo ? `https://github.com/${repo}/issues/new?template=${template}` : null;
+}
+
+function renderTeamActions() {
+  const box = byId("team-actions");
+  if (!box || box.childNodes.length) return;
+  for (const [template, label] of [["weekly-hours.yml", "Log weekly hours"], ["assign-work.yml", "Assign work"], ["start-thread.yml", "Start a thread"]]) {
+    const url = safeHref(newIssueUrl(template));
+    if (!url) continue;
+    const a = anchor(url, label);
+    a.className = "team-action";
+    box.appendChild(a);
+  }
+  box.appendChild(el("p", "team-public-note", "Entries open a GitHub form and are public in the project repository."));
+}
+
+function renderTeamStatus(analysis) {
+  const box = byId("team-status");
+  clear(box);
+  const repo = repoPath();
+  const issues = repo ? anchor(`https://github.com/${repo}/issues`, "open the issues on GitHub") : null;
+  const say = (cls, text, withLink) => {
+    const p = el("p", "team-notice " + cls, text);
+    if (withLink && issues) p.append(" You can ", issues, " directly.");
+    box.appendChild(p);
+  };
+  if (team.status === "loading" || team.status === "idle") say("is-loading", "Reading team records from GitHub…");
+  else if (team.status === "failed") say("is-problem", "Team records could not be read from GitHub, so no hours or assignments are shown.", true);
+  else if (team.status === "limited") say("is-problem", "GitHub’s request limit for this network has been reached" + (team.reset ? `; it resets at ${team.reset.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}.` : ".") + " No figures are shown until the records can be read in full.", true);
+  else if (team.status === "incomplete") say("is-problem", `There are more team records than this page reads (${TEAM_PAGE_LIMIT * 100}), so totals are not shown.`, true);
+  else if (!analysis.recognised) {
+    const empty = el("div", "empty-state team-empty");
+    empty.append(el("h3", null, "No team records yet"),
+      el("p", null, "Weekly hours, assigned work and discussion threads appear here as soon as the first entry is made with the buttons above."));
+    box.appendChild(empty);
+  }
+  const meta = byId("team-meta");
+  clear(meta);
+  if (team.fetchedAt && team.status === "ok") {
+    const time = team.fetchedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    const today = team.fetchedAt.toDateString() === new Date().toDateString();
+    meta.appendChild(el("span", null, "Read from GitHub " + (today ? "at " + time : "on " + team.fetchedAt.toISOString().slice(0, 10) + " " + time)));
+  }
+  const refresh = el("button", "team-refresh", "Refresh");
+  refresh.type = "button";
+  refresh.disabled = team.status === "loading";
+  refresh.addEventListener("click", () => loadTeam(true));
+  meta.appendChild(refresh);
+}
+
+function formatHours(h) { return (Math.round(h * 10) / 10).toLocaleString("en-GB"); }
+
+function renderTeamHours(analysis) {
+  const box = byId("team-hours");
+  clear(box);
+  box.hidden = !analysis.hours.length && !analysis.invalid.length;
+  if (box.hidden) return;
+  const heading = el("div", "section-heading");
+  const title = el("div");
+  title.append(el("span", "section-eyebrow", "Logged time by work package"), el("h2", null, "Hours"));
+  heading.appendChild(title);
+  box.appendChild(heading);
+  if (!analysis.hours.length) {
+    box.appendChild(el("p", "team-quiet", "No valid hours entries to total yet."));
+    renderNotCounted(box, analysis);
+    return;
+  }
+  const pkgs = data.packages || [];
+  const rows = teamMembers().map(m => {
+    const own = analysis.hours.filter(h => h.member === m);
+    const by = Object.fromEntries(pkgs.map(p => [p.id, own.reduce((s, h) => s + (h.byPackage[p.id] || 0), 0)]));
+    return { label: m.name, by, total: Object.values(by).reduce((a, b) => a + b, 0), weeks: new Set(own.map(h => h.week)).size };
+  });
+  const teamBy = Object.fromEntries(pkgs.map(p => [p.id, rows.reduce((s, r) => s + r.by[p.id], 0)]));
+  const teamTotal = rows.reduce((s, r) => s + r.total, 0);
+  const summary = el("ul", "hours-summary");
+  for (const r of rows.concat([{ label: "Team", total: teamTotal }])) {
+    const li = el("li", r.label === "Team" ? "is-team" : null);
+    li.append(el("strong", null, formatHours(r.total) + " h"), el("span", null, r.label === "Team" ? "Team total" : r.label));
+    summary.appendChild(li);
+  }
+  box.appendChild(summary);
+  const wrap = el("div", "hours-scroll");
+  wrap.tabIndex = 0; wrap.setAttribute("role", "region"); wrap.setAttribute("aria-label", "Logged hours by member and work package");
+  const table = el("table", "hours-table");
+  table.appendChild(el("caption", "visually-hidden", "Logged hours by member and work package"));
+  const hr = el("tr");
+  const corner = el("th", null, "Member"); corner.scope = "col"; hr.appendChild(corner);
+  for (const p of pkgs) {
+    const th = el("th", "hours-wp", p.id); th.scope = "col"; th.title = p.name; th.style.setProperty("--wp", p.color); hr.appendChild(th);
+  }
+  for (const label of ["Total", "Weeks logged"]) { const th = el("th", null, label); th.scope = "col"; hr.appendChild(th); }
+  const thead = el("thead"); thead.appendChild(hr); table.appendChild(thead);
+  const tbody = el("tbody");
+  const addRow = (r, cls) => {
+    const tr = el("tr", cls);
+    const th = el("th", null, r.label); th.scope = "row"; tr.appendChild(th);
+    for (const p of pkgs) tr.appendChild(el("td", r.by[p.id] ? "hours-value" : "hours-value is-zero", formatHours(r.by[p.id])));
+    const total = el("td", "hours-total");
+    const share = teamTotal ? r.total / teamTotal : 0;
+    total.append(el("span", null, formatHours(r.total)));
+    if (cls !== "hours-team") { const bar = el("i", "hours-bar"); bar.style.setProperty("--share", String(share)); bar.setAttribute("aria-hidden", "true"); total.appendChild(bar); }
+    tr.append(total, el("td", "hours-weeks", r.weeks === null ? "" : `${r.weeks} / ${totalWeeks()}`));
+    tbody.appendChild(tr);
+  };
+  rows.forEach(r => addRow(r));
+  addRow({ label: "Team", by: teamBy, total: teamTotal, weeks: new Set(analysis.hours.map(h => h.week)).size }, "hours-team");
+  table.appendChild(tbody);
+  wrap.appendChild(table);
+  box.appendChild(wrap);
+  box.appendChild(el("p", "figure-note", `Hours are logged time from ${analysis.hours.length} weekly ${analysis.hours.length === 1 ? "entry" : "entries"}, not a measure of all time worked. Team weeks counts weeks with at least one entry.`));
+  renderNotCounted(box, analysis);
+}
+
+function renderNotCounted(box, analysis) {
+  if (!analysis.invalid.length) return;
+  const d = el("details", "not-counted");
+  d.appendChild(el("summary", null, `${analysis.invalid.length} ${analysis.invalid.length === 1 ? "entry is" : "entries are"} not counted`));
+  const ul = el("ul");
+  for (const x of analysis.invalid.slice().sort((a, b) => a.issue.number - b.issue.number)) {
+    const li = el("li"); li.append(issueLink(x.issue), " " + cleanTitle(x.issue.title) + ": " + x.reason); ul.appendChild(li);
+  }
+  d.appendChild(ul);
+  box.appendChild(d);
+}
+
+function renderTeamTasks(analysis) {
+  const box = byId("team-assignments");
+  clear(box);
+  box.hidden = !analysis.tasks.length;
+  if (box.hidden) return;
+  const open = analysis.tasks.filter(t => t.issue.state === "open");
+  const closed = analysis.tasks.length - open.length;
+  const heading = el("div", "section-heading");
+  const title = el("div");
+  title.append(el("span", "section-eyebrow", `${open.length} open · ${closed} closed`), el("h2", null, "Assigned work"));
+  heading.appendChild(title);
+  box.appendChild(heading);
+  if (!open.length) box.appendChild(el("p", "team-quiet", "No open assignments."));
+  const ul = el("ul", "team-list");
+  for (const t of open.slice(0, 6)) {
+    const li = el("li", "team-item");
+    const pkg = (data.packages || []).find(p => p.id === t.pkg);
+    if (pkg) li.style.setProperty("--wp", pkg.color);
+    li.appendChild(issueLink(t.issue, cleanTitle(t.issue.title)));
+    const meta = [`${firstName(t.from)} → ${t.to ? firstName(t.to) : "unassigned"}`, t.task || t.pkg || "General", t.due ? "due week " + t.due : null].filter(Boolean).join(" · ");
+    li.appendChild(el("span", "team-item-meta", meta));
+    ul.appendChild(li);
+  }
+  box.appendChild(ul);
+  const repo = repoPath();
+  if (repo && analysis.tasks.length > 6) box.appendChild(anchor(`https://github.com/${repo}/issues?q=label%3Atype%3Atask`, "All assignments on GitHub ↗"));
+}
+
+function renderTeamThreads(analysis) {
+  const box = byId("team-threads");
+  clear(box);
+  box.hidden = !analysis.threads.length;
+  if (box.hidden) return;
+  const heading = el("div", "section-heading");
+  const title = el("div");
+  title.append(el("span", "section-eyebrow", "Most recent first"), el("h2", null, "Threads"));
+  heading.appendChild(title);
+  box.appendChild(heading);
+  const ul = el("ul", "team-list");
+  const recent = analysis.threads.slice().sort((a, b) => b.issue.updated_at.localeCompare(a.issue.updated_at));
+  for (const t of recent.slice(0, 5)) {
+    const li = el("li", "team-item" + (t.issue.state === "closed" ? " is-closed" : ""));
+    const pkg = (data.packages || []).find(p => p.id === t.pkg);
+    if (pkg) li.style.setProperty("--wp", pkg.color);
+    li.appendChild(issueLink(t.issue, cleanTitle(t.issue.title)));
+    const replies = t.issue.comments === 1 ? "1 reply" : t.issue.comments + " replies";
+    li.appendChild(el("span", "team-item-meta", [firstName(t.author), t.pkg || "General", replies, "updated " + t.issue.updated_at.slice(0, 10), t.issue.state === "closed" ? "closed" : null].filter(Boolean).join(" · ")));
+    ul.appendChild(li);
+  }
+  box.appendChild(ul);
+  const repo = repoPath();
+  if (repo && analysis.threads.length > 5) box.appendChild(anchor(`https://github.com/${repo}/issues?q=label%3Atype%3Athread`, "All threads on GitHub ↗"));
+}
+
+function renderTeam() {
+  if (!data || !byId("team-status")) return;
+  renderTeamActions();
+  const analysis = team.status === "ok" ? analyseIssues(team.items) : { recognised: 0, hours: [], invalid: [], tasks: [], threads: [] };
+  renderTeamStatus(analysis);
+  renderTeamHours(analysis);
+  renderTeamTasks(analysis);
+  renderTeamThreads(analysis);
 }
 
 /* ---------------- hash / Bootstrap tab navigation ---------------- */
@@ -746,6 +1135,7 @@ function openSection(id, focus = true) {
 
 function syncChrome(route) {
   document.body.dataset.view = route;
+  if (route === "team" && data && (team.status === "idle" || (team.status === "ok" && Date.now() - team.fetchedAt > TEAM_CACHE_MS))) loadTeam(false);
   for (const b of navButtons()) {
     if (b.dataset.route === route) b.setAttribute("aria-current", "page");
     else b.removeAttribute("aria-current");
@@ -818,7 +1208,8 @@ function wireTabs() {
     if (route === "presentations" && /^\d+$/.test(target.dataset.presentation || "")) {
       const card = document.querySelector('.presentation-card[data-review-week="' + target.dataset.presentation + '"]');
       if (card) {
-        card.focus({ preventScroll: true });
+        card.open = true;
+        card.querySelector("summary").focus({ preventScroll: true });
         card.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
       }
     }
@@ -864,9 +1255,10 @@ async function initialise() {
     indexMilestones();
     ensureControls();
     renderAll();
+    if (activeRoute() === "team") loadTeam(false);
     setStatusAlert("", false);
   } catch (error) {
-    clear(byId("overview-stats"));
+    clear(byId("overview-update"));
     setStatusAlert("The project data could not be loaded. Refresh the page to try again. The Excel work plan is still available above.", true);
   }
 }

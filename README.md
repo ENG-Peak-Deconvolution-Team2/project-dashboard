@@ -2,7 +2,7 @@
 
 [Open dashboard](https://eng-peak-deconvolution-team2.github.io/project-dashboard/) · [Edit project data](https://github.com/ENG-Peak-Deconvolution-Team2/project-dashboard/edit/main/data/project.json)
 
-**Last verified: 2026-09-24.**
+**Last verified: 2026-09-30.**
 
 An English project dashboard exclusively for **Team 2 — Machine learning**.
 Members: Hıba Berchane (BME) and Hasan Oruçlar (EEE), presented with equal prominence.
@@ -11,15 +11,16 @@ Members: Hıba Berchane (BME) and Hasan Oruçlar (EEE), presented with equal pro
 
 | Section | Route | Content |
 |---|---|---|
-| Overview | #overview | Scope, programme timeline, next presentation, team and selected-week tasks |
-| Project plan | #plan | Gantt schedule, work packages and risk/solution records in three expandable sections |
-| Presentations | #presentations | Weeks 3, 5, 7, 10, 12 and 14: proposed expectations and evidence |
-| Results & resources | #results | Experiment records, planning workbook, datasets and literature |
-| Project journal | #journal | Historical planning decisions and recorded meetings |
+| Overview | #overview | Latest update, programme timeline, next presentation and selected-week tasks |
+| Project plan | #plan | Gantt schedule (open by default), work packages and risk/solution records |
+| Presentations | #presentations | Weeks 3, 5, 7, 10, 12 and 14 as disclosures; the next review is open |
+| Results & resources | #results | Experiment records, planning workbook and datasets |
+| Team | #team | Logged hours per member and work package, assigned work, threads, decisions and meetings |
 
-The five panel shells and their navigation buttons are static HTML. Content
-is rendered from `data/project.json`; there is no backend, browser editor or
-browser-local content storage.
+The five panel shells and their navigation buttons are static HTML. Plan content
+is rendered from `data/project.json`. The Team page also reads the dashboard
+repository's GitHub issues (see [Team page](#team-page)); there is no other backend
+and no browser editor. The old `#journal` link opens Team.
 
 Project plan uses native expandable sections, without additional tabs. Existing
 links to `#schedule`, `#packages`, `#risks` and `#resources` still open the relevant
@@ -115,10 +116,25 @@ data leakage, weak model performance, reference/local-data differences,
 explanation reliability, interface output errors and unsupported query answers.
 They do not amend scientific protocols or authorise changes to project scope.
 
+### Latest update
+
+`project.updates` is an array of supervisor-facing progress notes. The newest
+one is shown at the top of Overview:
+
+```json
+"updates": [{ "date": "2026-10-06", "achievement": "First detection baseline on the reference split",
+  "evidence": { "label": "Results table", "href": "documents/detection-w3.pdf" },
+  "next": "Concentration classification (WP3.2)", "blocker": null }]
+```
+
+This is a schema example, not a recorded update. While the array is empty the
+card says that no progress update has been recorded.
+
 ### Other collections
 
 - `teams`: one object, `team2`, with `name`, `approach`, and
-  `members: [{name, department}]`.
+  `members: [{name, department, github}]`. `github` is the account whose Team
+  entries count.
 - `milestones`: `{week, title, type}`; type is `presentation` or `midterm`.
 - `experiments`: `{id, title, team: "team2", dataset, task, model, date,
   metrics: [{name, value, unit}], notes, href}`. Empty until real runs are recorded.
@@ -131,6 +147,39 @@ They do not amend scientific protocols or authorise changes to project scope.
 
 All JSON text is rendered as text, and links are restricted to HTTP(S) or
 same-site relative paths.
+
+## Team page
+
+Three buttons open GitHub issue forms in the dashboard repository
+(`.github/ISSUE_TEMPLATE/`). Entries are **public**.
+
+| Form | Label | What the Team page shows |
+|---|---|---|
+| Weekly hours | `type:hours` | One entry per person per week: hours for WP1–WP6 and a note. The member × package table, per-member totals and weeks logged |
+| Assign work | `type:task` | Open assignments (who gave it, to whom, package or task, due week) and the closed count |
+| Start a thread | `type:thread` | The five most recently updated threads with reply counts; replies happen on GitHub, which e-mails participants |
+
+Counting rules:
+
+- Only issues opened by the accounts in `teams[0].members[].github` count.
+- A type label decides the kind; the title prefix (`[Hours]`, `[Task]`, `[Thread]`)
+  is used only when no type label is present. Two type labels: not counted.
+- One weekly entry per member and week: the most recently updated one counts.
+  If it is invalid (hours outside 0–60, a repeated field), that week is not
+  counted until the entry is edited. Correct an entry by editing it.
+- Every excluded entry is listed under "not counted" with its reason.
+- Hours are logged time, not a measure of all time worked. Closing an
+  assignment does not change a task's status in `project.json`.
+
+Reading: the page reads `api.github.com` without credentials when Team is first
+opened (60 requests per hour per network), keeps a complete read for 10 minutes
+and offers Refresh. A failed, rate-limited or incomplete read (more than 500
+issues) shows a notice and no totals.
+
+To enable it on the published site, copy `.github/ISSUE_TEMPLATE/` to the
+dashboard repository root with the rest of this folder and create the three
+labels there. If a label is missing, new issues may arrive unlabelled; the
+title prefixes still identify them.
 
 ## Local use and publication
 
@@ -148,6 +197,14 @@ GitHub Pages uses the `main` branch, root folder. The private research
 repository, source data and unrelated documents are not part of the site.
 
 ## Design and validation
+
+**Effectiveness audit (2026-09-29/30).** Three review rounds between two models
+on rendered screenshots at 1440, 900 and 390 px removed the static scope tiles,
+the duplicate weekly task list, 23 "Not reported" badges, the "06" banner, empty
+presentation and literature placeholders and the masthead topic chips; the
+Journal became part of Team. Small muted text meets WCAG AA 4.5:1 and reading
+text is at least 15 px. The Team page was checked with mocked GitHub responses
+(normal, empty, invalid-only, edge cases, incomplete, failed, rate-limited).
 
 The Team 2 revision uses a navy sidebar, a decorative signal motif, violet and
 teal accents, colour-coded package timelines, presentation cards and risk

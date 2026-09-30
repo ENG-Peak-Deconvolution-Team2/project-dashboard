@@ -1,0 +1,73 @@
+name: Weekly hours
+description: Log the hours you worked this week, split by work package.
+title: "[Hours] Week "
+labels: ["type:hours"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        One entry per person per week. To correct an entry, edit this issue instead of opening a new one.
+        Leave a field empty for 0 hours. This entry is public: it is stored as an issue in the public project repository and shown on the dashboard.
+  - type: dropdown
+    id: week
+    attributes:
+      label: Week
+      options:
+        - "Week 1"
+        - "Week 2"
+        - "Week 3"
+        - "Week 4"
+        - "Week 5"
+        - "Week 6"
+        - "Week 7"
+        - "Week 8"
+        - "Week 9"
+        - "Week 10"
+        - "Week 11"
+        - "Week 12"
+        - "Week 13"
+        - "Week 14"
+        - "Week 15"
+    validations:
+      required: true
+  - type: input
+    id: wp1
+    attributes:
+      label: WP1 hours
+      description: Local Dataset Acquisition
+      placeholder: "0"
+  - type: input
+    id: wp2
+    attributes:
+      label: WP2 hours
+      description: Existing Dataset Preparation and Preprocessing
+      placeholder: "0"
+  - type: input
+    id: wp3
+    attributes:
+      label: WP3 hours
+      description: Model Development and Evaluation
+      placeholder: "0"
+  - type: input
+    id: wp4
+    attributes:
+      label: WP4 hours
+      description: Model Adaptation and Evaluation on Local Data
+      placeholder: "0"
+  - type: input
+    id: wp5
+    attributes:
+      label: WP5 hours
+      description: Explainable AI (XAI)
+      placeholder: "0"
+  - type: input
+    id: wp6
+    attributes:
+      label: WP6 hours
+      description: Web Interface Development and Integration
+      placeholder: "0"
+  - type: textarea
+    id: note
+    attributes:
+      label: Note
+      description: Optional. What the time was spent on.

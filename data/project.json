@@ -2,12 +2,13 @@
   "project": {
     "name": "Peak Deconvolution",
     "description": "Voltammetric data acquisition, predictive modelling and explainable analysis.",
-    "updated": "2026-09-24",
+    "updated": "2026-09-30",
     "planVerified": "2026-09-23",
     "weeks": 15,
     "startDate": null,
     "repositoryUrl": "https://github.com/ENG-Peak-Deconvolution-Team2/project-dashboard",
-    "siteUrl": "https://eng-peak-deconvolution-team2.github.io/project-dashboard/"
+    "siteUrl": "https://eng-peak-deconvolution-team2.github.io/project-dashboard/",
+    "updates": []
   },
   "teams": [
     {
@@ -17,11 +18,13 @@
       "members": [
         {
           "name": "Hıba Berchane",
-          "department": "BME"
+          "department": "BME",
+          "github": "berchanehiba"
         },
         {
           "name": "Hasan Oruçlar",
-          "department": "EEE"
+          "department": "EEE",
+          "github": "HasanO13"
         }
       ]
     }
@@ -479,9 +482,9 @@
       "id": "dataset-acs-ml-biomarker",
       "type": "dataset",
       "title": "ACS-ML-Biomarker dataset",
-      "description": "Reference data for preprocessing, model development and evaluation in WP2 and WP3.",
-      "href": null,
-      "label": null
+      "description": "Published reference data (raw SWV files and code, MIT licence) for preprocessing, model development and evaluation in WP2 and WP3.",
+      "href": "https://github.com/esemsc-ald24/ML-Biomarker-Sensing",
+      "label": "Open source repository"
     },
     {
       "id": "dataset-local",
@@ -489,7 +492,8 @@
       "title": "Local dataset",
       "description": "Voltammetric measurements planned in WP1, followed by model adaptation and evaluation in WP4.",
       "href": null,
-      "label": null
+      "label": null,
+      "pending": "Access pending: measurements not yet recorded"
     }
   ],
   "decisions": [

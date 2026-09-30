@@ -1,0 +1,29 @@
+name: Start a thread
+description: Open a discussion thread about the project.
+title: "[Thread] "
+labels: ["type:thread"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Replies go in the comments; GitHub notifies participants by e-mail. Close the thread when it is settled. This entry is public: it is stored as an issue in the public project repository and shown on the dashboard.
+  - type: dropdown
+    id: package
+    attributes:
+      label: Work package
+      options:
+        - "WP1 · Local Dataset Acquisition"
+        - "WP2 · Existing Dataset Preparation and Preprocessing"
+        - "WP3 · Model Development and Evaluation"
+        - "WP4 · Model Adaptation and Evaluation on Local Data"
+        - "WP5 · Explainable AI (XAI)"
+        - "WP6 · Web Interface Development and Integration"
+        - "General"
+    validations:
+      required: true
+  - type: textarea
+    id: message
+    attributes:
+      label: Message
+    validations:
+      required: true

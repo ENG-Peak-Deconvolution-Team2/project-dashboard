@@ -1,0 +1,64 @@
+name: Assign work
+description: Give a piece of work to a team member.
+title: "[Task] "
+labels: ["type:task"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Close this issue when the work is done. Discuss it in the comments. This entry is public: it is stored as an issue in the public project repository and shown on the dashboard.
+  - type: dropdown
+    id: assignee
+    attributes:
+      label: Assign to
+      options:
+        - "Hıba Berchane"
+        - "Hasan Oruçlar"
+    validations:
+      required: true
+  - type: dropdown
+    id: package
+    attributes:
+      label: Work package
+      options:
+        - "WP1 · Local Dataset Acquisition"
+        - "WP2 · Existing Dataset Preparation and Preprocessing"
+        - "WP3 · Model Development and Evaluation"
+        - "WP4 · Model Adaptation and Evaluation on Local Data"
+        - "WP5 · Explainable AI (XAI)"
+        - "WP6 · Web Interface Development and Integration"
+        - "General"
+    validations:
+      required: true
+  - type: input
+    id: task
+    attributes:
+      label: Related task
+      placeholder: "e.g. WP3.1"
+  - type: dropdown
+    id: due
+    attributes:
+      label: Due week
+      options:
+        - "No due week"
+        - "Week 1"
+        - "Week 2"
+        - "Week 3"
+        - "Week 4"
+        - "Week 5"
+        - "Week 6"
+        - "Week 7"
+        - "Week 8"
+        - "Week 9"
+        - "Week 10"
+        - "Week 11"
+        - "Week 12"
+        - "Week 13"
+        - "Week 14"
+        - "Week 15"
+  - type: textarea
+    id: details
+    attributes:
+      label: What needs to be done
+    validations:
+      required: true

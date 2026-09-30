@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Project dashboard
+    url: https://eng-peak-deconvolution-team2.github.io/project-dashboard/#team
+    about: Hours, assignments and threads are summarised on the Team page.
