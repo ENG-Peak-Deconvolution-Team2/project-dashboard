@@ -214,3 +214,33 @@ button.team-action{cursor:pointer;font-family:inherit}
 .thread-message p{margin:0;white-space:pre-wrap;color:var(--ink);font-size:.9375rem}
 .dialog-link{font-size:.8125rem}
 @media(max-width:560px){.hours-inputs{grid-template-columns:repeat(2,minmax(0,1fr))}.dialog-row{grid-template-columns:1fr}.dialog-actions{flex-wrap:wrap}.dialog-status{flex-basis:100%}}
+/* Result figures */
+.research-layout:has(.result-card){grid-template-columns:1fr}
+.result-card{background:#fff;border:1px solid var(--rule);border-radius:14px;padding:22px 24px}
+.result-figures{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;margin-top:14px}
+.result-figure{margin:0;min-width:0}
+.result-figure figcaption{font-size:.9375rem;font-weight:500;color:var(--ink);margin-bottom:6px}
+.chart-wrap{position:relative}
+.chart-svg{width:100%;height:auto;display:block;overflow:visible}
+.chart-grid line{stroke:#e8eaf1;stroke-width:1}
+.chart-grid .chart-axis{stroke:#b9bdcb}
+.chart-grid text{font-size:12px;fill:#56617c;font-family:var(--sans)}
+.chart-grid .chart-axis-label{font-size:12.5px;fill:#3f4863}
+.chart-line{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.chart-line.is-dashed{stroke-dasharray:5 4}
+.chart-fit{stroke:#56617c;stroke-width:1.5;stroke-dasharray:6 5}
+.chart-dot{stroke:#fff;stroke-width:2}
+.chart-point:focus{outline:none}.chart-point:focus .chart-dot{stroke:#1c1a3a}
+.chart-direct{font-size:12px;fill:#202d49;font-family:var(--sans);font-weight:500}
+.chart-guide{stroke:#9aa1b4;stroke-width:1}
+.chart-tip{position:absolute;pointer-events:none;background:#fff;border:1px solid var(--rule);border-radius:8px;box-shadow:0 6px 18px #17234422;padding:7px 10px;font-size:.8125rem;display:grid;gap:1px;min-width:120px;z-index:2}
+.chart-tip strong{font-weight:600;color:var(--ink)}.chart-tip span{color:#4f5a73}
+.chart-legend{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8125rem;color:#4f5a73}
+.chart-legend li{display:flex;align-items:center;gap:6px}
+.chart-swatch{display:inline-block;width:16px;height:0;border-top:2.5px solid var(--c)}
+.chart-swatch.is-dashed{border-top-style:dashed}
+.chart-swatch.is-dot{width:9px;height:9px;border:0;border-radius:50%;background:var(--c)}
+.result-table{margin-top:12px;font-size:.9375rem}
+.result-table summary{cursor:pointer;color:var(--accent)}
+.result-table .hours-table{min-width:0}
+@media(max-width:900px){.result-figures{grid-template-columns:1fr}}

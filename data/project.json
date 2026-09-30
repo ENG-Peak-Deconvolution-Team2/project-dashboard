@@ -468,7 +468,42 @@
       "type": "presentation"
     }
   ],
-  "experiments": [],
+  "experiments": [
+    {
+      "id": "local-dopamine-calibration",
+      "title": "Local dataset: first dopamine calibration",
+      "team": "team2",
+      "dataset": "Local dataset: 26 dopamine scans (1, 5, 10, 20, 50, 100 µM) and 4 PBS blanks on electrodes 1–4",
+      "task": "WP1.4 measurement quality control",
+      "model": "Baseline-corrected peak height; linear calibration",
+      "date": "2026-09-30",
+      "metrics": [
+        {
+          "name": "Peak potential, 20–100 µM (electrodes 2–4)",
+          "value": "0.09–0.14",
+          "unit": "V"
+        },
+        {
+          "name": "Sensitivity, all 30 scans",
+          "value": "22.9",
+          "unit": "nA/µM"
+        },
+        {
+          "name": "R², all 30 scans",
+          "value": "0.878",
+          "unit": ""
+        },
+        {
+          "name": "R², electrodes 2–4 (22 scans)",
+          "value": "0.983",
+          "unit": ""
+        }
+      ],
+      "notes": "The oxidation peak grows with concentration and moves from about 0.09 V at 20 µM to 0.13 V at 100 µM. 1 µM cannot be told apart from the blank, and at 5–10 µM electrodes 3 and 4 show only a small peak. Electrode 1 reads higher than electrodes 3 and 4 at 5–20 µM, which lowers the fit over all scans (R² 0.878) against electrodes 2–4 alone (R² 0.983, 24.4 nA/µM). A second peak near 0.8 V is also visible and not analysed here.",
+      "figure": "data/local-dopamine.json",
+      "href": null
+    }
+  ],
   "resources": [
     {
       "id": "gantt",
@@ -490,10 +525,10 @@
       "id": "dataset-local",
       "type": "dataset",
       "title": "Local dataset",
-      "description": "Voltammetric measurements planned in WP1, followed by model adaptation and evaluation in WP4.",
+      "description": "Pulse-voltammetry measurements (δ = pulse − base current) of dopamine (1–100 µM) and PBS blanks on four electrodes, recorded in WP1. Summary and figures are under Experiments & results.",
       "href": null,
       "label": null,
-      "pending": "Access pending: measurements not yet recorded"
+      "pending": "Raw files are kept by the team and not published"
     }
   ],
   "decisions": [

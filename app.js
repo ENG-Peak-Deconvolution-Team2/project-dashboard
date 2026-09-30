@@ -608,9 +608,168 @@ function renderResults() {
       card.appendChild(list);
     }
     if (x.notes) card.appendChild(el("p", "result-notes", x.notes));
+    if (x.figure) { const fig = el("div", "result-figure-box"); card.appendChild(fig); renderFigure(fig, x.figure); }
     const safe = safeHref(x.href);
     if (safe) card.appendChild(anchor(safe, "Open record"));
     box.appendChild(card);
+  }
+}
+
+/* ---------------- Result figures (inline SVG, no library) ----------------
+ * An experiment with "figure": "<path to JSON>" gets two charts built from that summary file:
+ * voltammograms of one electrode across concentrations, and peak height against concentration.
+ */
+const SVGNS = "http://www.w3.org/2000/svg";
+const SEQ = ["#9ec5f4", "#6da7ec", "#3987e5", "#2a78d6", "#1c5cab", "#104281"]; // 1 → 100 µM
+const BLANK = "#8a90a3";
+const CAT = { other: "#6551be", e1: "#d95f2b" };
+
+function svg(tag, attrs = {}) {
+  const n = document.createElementNS(SVGNS, tag);
+  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+  return n;
+}
+
+function niceTicks(lo, hi, count) {
+  const step = Math.pow(10, Math.floor(Math.log10((hi - lo) / count)));
+  const s = [1, 2, 2.5, 5, 10].map(m => m * step).find(m => (hi - lo) / m <= count) || step * 10;
+  const out = [];
+  for (let v = Math.ceil(lo / s) * s; v <= hi + 1e-9; v += s) out.push(Math.round(v * 1e6) / 1e6);
+  return out;
+}
+
+function chartFrame(title, xLabel, yLabel, xDomain, yDomain) {
+  const narrow = window.matchMedia("(max-width: 600px)").matches;
+  const W = narrow ? 360 : 560, H = narrow ? 250 : 300, m = { l: 46, r: 12, t: 14, b: 42 };
+  const x = v => m.l + (v - xDomain[0]) / (xDomain[1] - xDomain[0]) * (W - m.l - m.r);
+  const y = v => H - m.b - (v - yDomain[0]) / (yDomain[1] - yDomain[0]) * (H - m.t - m.b);
+  const root = svg("svg", { viewBox: `0 0 ${W} ${H}`, class: "chart-svg", role: "img", "aria-label": title });
+  const grid = svg("g", { class: "chart-grid" });
+  for (const t of niceTicks(yDomain[0], yDomain[1], 5)) {
+    grid.appendChild(svg("line", { x1: m.l, x2: W - m.r, y1: y(t), y2: y(t) }));
+    const lab = svg("text", { x: m.l - 8, y: y(t) + 4, "text-anchor": "end" }); lab.textContent = String(t); grid.appendChild(lab);
+  }
+  for (const t of niceTicks(xDomain[0], xDomain[1], 6)) {
+    const lab = svg("text", { x: x(t), y: H - m.b + 18, "text-anchor": "middle" }); lab.textContent = String(t); grid.appendChild(lab);
+  }
+  grid.appendChild(svg("line", { class: "chart-axis", x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b }));
+  const xl = svg("text", { class: "chart-axis-label", x: (m.l + W - m.r) / 2, y: H - 6, "text-anchor": "middle" }); xl.textContent = xLabel;
+  const yl = svg("text", { class: "chart-axis-label", x: 14, y: (m.t + H - m.b) / 2, "text-anchor": "middle", transform: `rotate(-90 14 ${(m.t + H - m.b) / 2})` }); yl.textContent = yLabel;
+  grid.append(xl, yl);
+  root.appendChild(grid);
+  return { root, x, y, W, H, m };
+}
+
+function tooltipFor(wrap) {
+  const tip = el("div", "chart-tip"); tip.hidden = true; wrap.appendChild(tip);
+  return {
+    show(lines, px, py) {
+      clear(tip);
+      for (const [i, line] of lines.entries()) tip.appendChild(el(i ? "span" : "strong", null, line));
+      tip.hidden = false;
+      const r = wrap.getBoundingClientRect();
+      tip.style.left = Math.min(px + 14, r.width - tip.offsetWidth - 4) + "px";
+      tip.style.top = Math.max(4, py - tip.offsetHeight - 10) + "px";
+    },
+    hide() { tip.hidden = true; }
+  };
+}
+
+function legend(items) {
+  const ul = el("ul", "chart-legend");
+  for (const it of items) {
+    const li = el("li");
+    const sw = el("i", "chart-swatch" + (it.dashed ? " is-dashed" : "") + (it.dot ? " is-dot" : ""));
+    sw.style.setProperty("--c", it.color);
+    li.append(sw, el("span", null, it.label));
+    ul.appendChild(li);
+  }
+  return ul;
+}
+
+function voltammogramChart(d) {
+  const figure = el("figure", "result-figure");
+  figure.appendChild(el("figcaption", null, "Voltammograms, electrode 3 (first repeat)"));
+  const all = d.curves.flatMap(c => c.I);
+  const f = chartFrame("Differential current against potential for each dopamine concentration, electrode 3", "Potential (V)", "δ current (µA)", [-0.1, 1.0], [0, Math.ceil(Math.max(...all) * 2) / 2]);
+  const colour = c => c.c === 0 ? BLANK : SEQ[d.concentrations_uM.filter(v => v > 0).indexOf(c.c)] || SEQ[SEQ.length - 1];
+  for (const c of d.curves) {
+    const p = c.E.map((e, i) => `${i ? "L" : "M"}${f.x(e).toFixed(1)},${f.y(c.I[i]).toFixed(1)}`).join("");
+    f.root.appendChild(svg("path", { d: p, class: "chart-line" + (c.c === 0 ? " is-dashed" : ""), stroke: colour(c) }));
+  }
+  const top = d.curves[d.curves.length - 1];
+  const k = top.I.indexOf(Math.max(...top.I.filter((_, i) => top.E[i] < 0.4)));
+  const lab = svg("text", { class: "chart-direct", x: f.x(top.E[k]) + 8, y: f.y(top.I[k]) + 4 }); lab.textContent = top.c + " µM";
+  f.root.appendChild(lab);
+  const guide = svg("line", { class: "chart-guide", y1: f.m.t, y2: f.H - f.m.b, visibility: "hidden" });
+  f.root.appendChild(guide);
+  const wrap = el("div", "chart-wrap"); wrap.appendChild(f.root);
+  const tip = tooltipFor(wrap);
+  const hit = svg("rect", { x: f.m.l, y: f.m.t, width: f.W - f.m.l - f.m.r, height: f.H - f.m.t - f.m.b, fill: "transparent" });
+  f.root.appendChild(hit);
+  hit.addEventListener("pointermove", ev => {
+    const pt = f.root.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+    const loc = pt.matrixTransform(f.root.getScreenCTM().inverse());
+    const E = top.E; let i = 0; for (let j = 1; j < E.length; j++) if (Math.abs(f.x(E[j]) - loc.x) < Math.abs(f.x(E[i]) - loc.x)) i = j;
+    guide.setAttribute("x1", f.x(E[i])); guide.setAttribute("x2", f.x(E[i])); guide.setAttribute("visibility", "visible");
+    const r = wrap.getBoundingClientRect();
+    tip.show([`${E[i].toFixed(3)} V`, ...d.curves.slice().reverse().map(c => `${c.c ? c.c + " µM" : "Blank"}: ${(c.I[Math.min(i, c.I.length - 1)]).toFixed(2)} µA`)], ev.clientX - r.left, ev.clientY - r.top);
+  });
+  hit.addEventListener("pointerleave", () => { tip.hide(); guide.setAttribute("visibility", "hidden"); });
+  figure.appendChild(wrap);
+  figure.appendChild(legend(d.curves.map(c => ({ color: colour(c), label: c.c ? c.c + " µM" : "PBS blank", dashed: c.c === 0 }))));
+  return figure;
+}
+
+function calibrationChart(d) {
+  const figure = el("figure", "result-figure");
+  figure.appendChild(el("figcaption", null, "Peak height against concentration, all 30 scans"));
+  const maxH = Math.max(...d.scans.map(s => s.height));
+  const f = chartFrame("Baseline-corrected peak height against dopamine concentration", "Dopamine (µM)", "Peak height (µA)", [0, 105], [0, Math.ceil(maxH * 2) / 2]);
+  const fit = d.fit_all;
+  f.root.appendChild(svg("line", { class: "chart-fit", x1: f.x(0), y1: f.y(Math.max(0, fit.intercept_uA)), x2: f.x(100), y2: f.y(fit.intercept_uA + fit.slope_nA_per_uM / 1000 * 100) }));
+  const wrap = el("div", "chart-wrap"); wrap.appendChild(f.root);
+  const tip = tooltipFor(wrap);
+  for (const s of d.scans) {
+    const g = svg("g", { class: "chart-point", tabindex: "0", role: "img", "aria-label": `${s.c} µM, electrode ${s.electrode}, repeat ${s.repeat}: ${s.height} µA` });
+    const cx = f.x(s.c) + (s.electrode - 2.5) * 3, cy = f.y(Math.max(0, s.height));
+    g.append(svg("circle", { cx, cy, r: 12, fill: "transparent" }), svg("circle", { cx, cy, r: 4.5, fill: s.electrode === 1 ? CAT.e1 : CAT.other, class: "chart-dot" }));
+    const show = () => { const r = wrap.getBoundingClientRect(), b = g.getBoundingClientRect(); tip.show([`${s.c} µM · electrode ${s.electrode}, repeat ${s.repeat}`, `Peak ${s.height.toFixed(2)} µA at ${s.ep.toFixed(2)} V`], b.left - r.left + b.width / 2, b.top - r.top); };
+    g.addEventListener("pointerenter", show); g.addEventListener("focus", show);
+    g.addEventListener("pointerleave", () => tip.hide()); g.addEventListener("blur", () => tip.hide());
+    f.root.appendChild(g);
+  }
+  figure.appendChild(wrap);
+  figure.appendChild(legend([{ color: CAT.other, label: "Electrodes 2–4", dot: true }, { color: CAT.e1, label: "Electrode 1", dot: true }, { color: "#56617c", label: `Linear fit, all scans (R² ${fit.r2})`, dashed: true }]));
+  return figure;
+}
+
+function scanTable(d) {
+  const det = el("details", "result-table");
+  det.appendChild(el("summary", null, "Table of all 30 scans"));
+  const wrapT = el("div", "hours-scroll");
+  const t = el("table", "hours-table");
+  const hr = el("tr");
+  for (const h of ["Dopamine (µM)", "Electrode", "Repeat", "Peak (V)", "Peak height (µA)"]) { const th = el("th", null, h); th.scope = "col"; hr.appendChild(th); }
+  const th = el("thead"); th.appendChild(hr); t.appendChild(th);
+  const tb = el("tbody");
+  for (const s of d.scans) { const tr = el("tr"); for (const v of [s.c || "Blank", s.electrode, s.repeat, s.ep.toFixed(3), s.height.toFixed(3)]) tr.appendChild(el("td", null, v)); tb.appendChild(tr); }
+  t.appendChild(tb); wrapT.appendChild(t); det.appendChild(wrapT);
+  return det;
+}
+
+async function renderFigure(box, path) {
+  const safe = safeHref(path);
+  if (!safe) return;
+  try {
+    const res = await fetch(safe, { cache: "no-cache" });
+    if (!res.ok) throw new Error();
+    const d = await res.json();
+    const grid = el("div", "result-figures");
+    grid.append(voltammogramChart(d), calibrationChart(d));
+    box.append(grid, el("p", "figure-note", d.method + " " + d.curves_note), scanTable(d));
+  } catch {
+    box.appendChild(el("p", "figure-note", "The figure data could not be loaded."));
   }
 }
 
