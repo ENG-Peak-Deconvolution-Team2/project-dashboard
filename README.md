@@ -159,7 +159,10 @@ classic token is used. Entries are saved as **public** issues in the dashboard
 repository, in the same format as the issue forms in `.github/ISSUE_TEMPLATE/`,
 which remain usable directly on GitHub.
 
-On the page: saving a week that is already logged updates that entry; assignments
+On the page: either member can log hours for either member (the Member field;
+without it an entry belongs to its author); the "By week" table lists each
+member's hours per week and a cell opens that week for editing; saving a week
+that is already logged updates that entry; assignments
 and threads open in a dialog with their replies, a reply box and close/reopen.
 
 | Form | Label | What the Team page shows |
@@ -173,7 +176,8 @@ Counting rules:
 - Only issues opened by the accounts in `teams[0].members[].github` count.
 - A type label decides the kind; the title prefix (`[Hours]`, `[Task]`, `[Thread]`)
   is used only when no type label is present. Two type labels: not counted.
-- One weekly entry per member and week: the most recently updated one counts.
+- One weekly entry per member and week (the member named in the entry, else its
+  author): the most recently updated one counts.
   If it is invalid (hours outside 0–60, a repeated field), that week is not
   counted until the entry is saved again.
 - Every excluded entry is listed under "not counted" with its reason.

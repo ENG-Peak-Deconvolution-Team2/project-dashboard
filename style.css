@@ -244,3 +244,12 @@ button.team-action{cursor:pointer;font-family:inherit}
 .result-table summary{cursor:pointer;color:var(--accent)}
 .result-table .hours-table{min-width:0}
 @media(max-width:900px){.result-figures{grid-template-columns:1fr}}
+/* Hours by week */
+.weekly-hours{margin-top:20px}
+.weekly-hours-title{font-size:1rem;font-weight:500;margin:0 0 6px}
+.weekly-table{min-width:420px}
+.weekly-table td{padding:4px 6px}
+.weekly-table tr.is-selected-week th,.weekly-table tr.is-selected-week td{background:#eef6f5}
+.week-cell{width:100%;border:1px solid transparent;background:none;border-radius:7px;padding:6px 8px;text-align:right;font:inherit;color:inherit;cursor:pointer;font-variant-numeric:tabular-nums}
+.week-cell:hover,.week-cell:focus-visible{border-color:#b1a1d9;background:#f4f1fc}
+.weekly-hours .dialog-hint{margin:6px 0 0}

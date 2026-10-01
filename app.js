@@ -954,6 +954,12 @@ function weekOf(value) {
 
 function cleanTitle(title) { return String(title || "").replace(/^\[(hours|task|thread)\]\s*/i, "").trim() || "Untitled"; }
 
+/* An hours entry belongs to the member named in its Member field; without one, to its author. */
+function hoursOwner(f, author) {
+  if (!f.member) return author;
+  return teamMembers().find(m => m.name === f.member) || null;
+}
+
 function newestFirst(a, b) {
   return b.updated_at.localeCompare(a.updated_at) || b.number - a.number;
 }
@@ -975,9 +981,11 @@ function analyseIssues(items) {
          correction still supersedes the older entry for that week. */
       const week = duplicates.includes("week") ? null : weekOf(f.week);
       if (!week) { invalid.push({ issue, reason: twice || "no valid week" }); continue; }
-      const key = author.github + "|" + week;
+      const owner = hoursOwner(f, author);
+      if (!owner) { invalid.push({ issue, reason: `“${f.member}” is not a team member` }); continue; }
+      const key = owner.github + "|" + week;
       if (!weekly.has(key)) weekly.set(key, []);
-      weekly.get(key).push({ issue, member: author, week, f, error: twice });
+      weekly.get(key).push({ issue, member: owner, week, f, error: twice });
       continue;
     }
     if (twice) { invalid.push({ issue, reason: twice }); continue; }
@@ -1205,8 +1213,49 @@ function renderTeamHours(analysis) {
   table.appendChild(tbody);
   wrap.appendChild(table);
   box.appendChild(wrap);
+  box.appendChild(weeklyHoursTable(analysis));
   box.appendChild(el("p", "figure-note", `Hours are logged time from ${analysis.hours.length} weekly ${analysis.hours.length === 1 ? "entry" : "entries"}, not a measure of all time worked. Team weeks counts weeks with at least one entry.`));
   renderNotCounted(box, analysis);
+}
+
+/* Hours per week and member, weeks 1 up to the later of the selected week and the last logged week.
+   Clicking a cell opens that member's week in the form. */
+function weeklyHoursTable(analysis) {
+  const sec = el("div", "weekly-hours");
+  sec.appendChild(el("h3", "weekly-hours-title", "By week"));
+  const members = teamMembers();
+  const last = Math.max(state.week, ...analysis.hours.map(h => h.week));
+  const wrap = el("div", "hours-scroll");
+  const table = el("table", "hours-table weekly-table");
+  table.appendChild(el("caption", "visually-hidden", "Logged hours by week and member"));
+  const hr = el("tr");
+  for (const h of ["Week", ...members.map(m => m.name), "Team"]) { const th = el("th", null, h); th.scope = "col"; hr.appendChild(th); }
+  const thead = el("thead"); thead.appendChild(hr); table.appendChild(thead);
+  const tbody = el("tbody");
+  for (let w = 1; w <= last; w++) {
+    const tr = el("tr", w === state.week ? "is-selected-week" : null);
+    const th = el("th", null, "Week " + w + (midtermWeeks.has(w) ? " · midterm" : "")); th.scope = "row"; tr.appendChild(th);
+    let sum = 0, any = false;
+    for (const m of members) {
+      const e = analysis.hours.find(h => h.member === m && h.week === w);
+      const total = e ? Object.values(e.byPackage).reduce((a, b) => a + b, 0) : null;
+      if (e) { sum += total; any = true; }
+      const td = el("td", e ? "hours-value" : "hours-value is-zero");
+      const b = el("button", "week-cell", e ? formatHours(total) : "—");
+      b.type = "button";
+      b.setAttribute("aria-label", `${m.name}, week ${w}: ${e ? formatHours(total) + " hours. Edit" : "not logged. Log hours"}`);
+      b.addEventListener("click", () => openHoursForm({ member: m, week: w }));
+      td.appendChild(b);
+      tr.appendChild(td);
+    }
+    tr.appendChild(el("td", "hours-total", any ? formatHours(sum) : "—"));
+    tbody.appendChild(tr);
+  }
+  table.appendChild(tbody);
+  wrap.appendChild(table);
+  sec.appendChild(wrap);
+  sec.appendChild(el("p", "dialog-hint", "Select a cell to log or edit that member’s week."));
+  return sec;
 }
 
 function renderNotCounted(box, analysis) {
@@ -1341,11 +1390,11 @@ const NO_RESPONSE = "_No response_";
 function section(label, value) { return `### ${label}\n\n${String(value || "").trim() || NO_RESPONSE}`; }
 function packageLabel(id) { const p = (data.packages || []).find(x => x.id === id); return p ? `${p.id} · ${p.name}` : "General"; }
 
-function hoursIssue(week, values, note) {
-  const parts = [section("Week", "Week " + week)];
+function hoursIssue(week, member, values, note) {
+  const parts = [section("Week", "Week " + week), section("Member", member.name)];
   for (const p of data.packages || []) parts.push(section(p.id + " hours", values[p.id]));
   parts.push(section("Note", note));
-  return { title: `[Hours] Week ${week}`, body: parts.join("\n\n") };
+  return { title: `[Hours] Week ${week} · ${firstName(member)}`, body: parts.join("\n\n") };
 }
 
 /* ---- dialog helpers ---- */
@@ -1444,17 +1493,23 @@ function disconnect() {
 }
 
 /* ---- weekly hours ---- */
-function ownEntry(week) {
-  if (team.status !== "ok" || !team.user) return null;
-  const mine = team.items.filter(i => issueKind(i) === "hours" && i.login.toLowerCase() === team.user.login.toLowerCase()
-    && weekOf(formFields(i.body, "hours").fields.week) === week);
-  return mine.sort(newestFirst)[0] || null;
+function entryFor(member, week) {
+  if (team.status !== "ok") return null;
+  const found = team.items.filter(i => {
+    if (issueKind(i) !== "hours" || !memberByLogin(i.login)) return false;
+    const f = formFields(i.body, "hours").fields;
+    return weekOf(f.week) === week && hoursOwner(f, memberByLogin(i.login)) === member;
+  });
+  return found.sort(newestFirst)[0] || null;
 }
 
-function openHoursForm() {
+function openHoursForm(preset = {}) {
   requireSignIn(() => openDialog("Log weekly hours", (body, form) => {
-    const week = select(weekOptions(), state.week);
-    body.appendChild(field("Week", week));
+    const row = el("div", "dialog-row");
+    const who = select(teamMembers().map(m => [m.github, m.name + (m === team.user.member ? " (me)" : "")]), (preset.member || team.user.member).github);
+    const week = select(weekOptions(), preset.week || state.week);
+    row.append(field("Member", who), field("Week", week));
+    body.appendChild(row);
     const grid = el("div", "hours-inputs");
     const boxes = {};
     for (const p of data.packages || []) {
@@ -1469,13 +1524,14 @@ function openHoursForm() {
     const info = el("p", "dialog-hint");
     body.appendChild(info);
     const fill = () => {
-      const existing = ownEntry(Number(week.value));
+      const existing = entryFor(memberByLogin(who.value), Number(week.value));
       const f = existing ? formFields(existing.body, "hours").fields : {};
       for (const p of data.packages || []) boxes[p.id].value = f[p.id.toLowerCase() + " hours"] || "";
       note.value = f.note || "";
-      info.textContent = existing ? `You already logged week ${week.value}; saving updates that entry (#${existing.number}).` : "Leave a package empty for 0 hours. Entries are public in the project repository.";
+      info.textContent = existing ? `Week ${week.value} is already logged for ${firstName(memberByLogin(who.value))}; saving updates that entry (#${existing.number}).` : "Leave a package empty for 0 hours. Entries are public in the project repository.";
     };
     week.addEventListener("change", fill);
+    who.addEventListener("change", fill);
     fill();
     actionsRow(form, "Save hours", async () => {
       const values = {};
@@ -1484,9 +1540,9 @@ function openHoursForm() {
         if (v && !(Number(v) >= 0 && Number(v) <= 60)) throw new Error(id + " hours must be between 0 and 60.");
         values[id] = v;
       }
-      const w = Number(week.value);
-      const { title, body: text } = hoursIssue(w, values, note.value);
-      const existing = ownEntry(w);
+      const w = Number(week.value), member = memberByLogin(who.value);
+      const { title, body: text } = hoursIssue(w, member, values, note.value);
+      const existing = entryFor(member, w);
       const repo = repoPath();
       const saved = existing
         ? await gh(`/repos/${repo}/issues/${existing.number}`, "PATCH", { title, body: text })

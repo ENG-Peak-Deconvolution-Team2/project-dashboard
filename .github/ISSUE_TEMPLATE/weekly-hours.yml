@@ -30,6 +30,14 @@ body:
         - "Week 15"
     validations:
       required: true
+  - type: dropdown
+    id: member
+    attributes:
+      label: Member
+      description: Whose hours these are. Leave empty for your own.
+      options:
+        - "Hıba Berchane"
+        - "Hasan Oruçlar"
   - type: input
     id: wp1
     attributes:
