@@ -14,7 +14,7 @@ Members: Hıba Berchane (BME) and Hasan Oruçlar (EEE), presented with equal pro
 | Overview | #overview | Latest update, programme timeline, next presentation and selected-week tasks |
 | Project plan | #plan | Gantt schedule (open by default), work packages and risk/solution records |
 | Presentations | #presentations | Weeks 3, 5, 7, 10, 12 and 14 as disclosures; the next review is open |
-| Results & resources | #results | Experiment records, planning workbook and datasets |
+| Results & resources | #results | Experiment records; Resources has a Library tab (planning workbook, datasets, literature) and a Measurement campaign tab (`#measurements`) |
 | Team | #team | Logged hours per member and work package, assigned work, threads, decisions and meetings |
 
 The five panel shells and their navigation buttons are static HTML. Plan content
@@ -30,7 +30,7 @@ work package. Navigation does not clone or move any panels at runtime.
 ## Plan authority and interpretation
 
 - Task names, weeks, package titles and department responsibilities follow
-  `plan/excel/PeakDeconv_Gantt_Chart.xlsx` in the research workspace.
+  `ENG/excel/PeakDeconv_Gantt_Chart.xlsx` in the research workspace.
   The dashboard contains 6 packages, 23 tasks and 15 planning weeks.
 - Presentation weeks are explicitly marked **PRESENTATION** in row 9 of the
   Gantt chart sheet: weeks **3, 5, 7, 10, 12 and 14**.
@@ -48,7 +48,7 @@ work package. Navigation does not clone or move any panels at runtime.
 - The dashboard presents both members equally, without a project-lead label,
   following the project owner's display decision on 2026-09-24.
   The three historical decisions follow
-  `plan/excel/WP1_literature_review_cikarildi.md` (2026-09-22).
+  `ENG/excel/WP1_literature_review_cikarildi.md` (2026-09-22).
 - Excel changes are not imported automatically. Update JSON and the downloadable
   workbook snapshot together when the plan changes.
 
@@ -147,6 +147,19 @@ card says that no progress update has been recorded.
 
 All JSON text is rendered as text, and links are restricted to HTTP(S) or
 same-site relative paths.
+
+### Measurement campaign
+
+`measurements.html` is the English copy of the team's DPV measurement panel:
+progress of the single-analyte, binary and ternary stages and every recorded
+curve as a plot (no file downloads; raw files stay with the team). It is
+generated, not edited by hand:
+`data/lokal_data_set_gezgin/build_portal.py` in the research workspace reads the
+measurement files and writes it here (about 6 MB, with Plotly and the curves
+embedded). Resources › Measurement campaign loads it in an iframe the first time
+the tab opens; `#measurements` opens that tab directly. The page sends its height
+and scroll targets to the dashboard with `postMessage`, so the frame has no fixed
+height. Opened on its own, the page shows its own header.
 
 ## Team page
 
