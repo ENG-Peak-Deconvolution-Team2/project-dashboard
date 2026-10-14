@@ -52,6 +52,7 @@ const ROUTE_ALIASES = {
   packages: { route: "plan", section: "plan-packages" },
   risks: { route: "plan", section: "plan-risks" },
   resources: { route: "results", section: "research-resources" },
+  measurements: { route: "results", section: "research-resources", tab: "resources-tab-campaign" },
   journal: { route: "team", section: "team-journal" }
 };
 const WEEKS_FALLBACK = 15;
@@ -1714,6 +1715,11 @@ function setHash(route) {
   catch (e) { location.hash = hash; }
 }
 
+function showSubTab(id) {
+  const btn = byId(id);
+  if (btn && window.bootstrap && window.bootstrap.Tab) window.bootstrap.Tab.getOrCreateInstance(btn).show();
+}
+
 function showTab(route) {
   if (!window.bootstrap || !window.bootstrap.Tab) return;
   const btn = document.querySelector(`[data-bs-toggle="tab"][data-route="${route}"]`);
@@ -1727,6 +1733,7 @@ function onBrowserNav() {
   if (r !== activeRoute()) showTab(r);
   else syncChrome(r);
   if (target.section) openSection(target.section);
+  if (target.tab) showSubTab(target.tab);
 }
 
 function focusPackage(wp) {
@@ -1764,6 +1771,7 @@ function wireTabs() {
     e.preventDefault();
     showTab(route);
     if (destination.section) openSection(destination.section, !target.dataset.wp);
+    if (destination.tab) showSubTab(destination.tab);
     if (route === "plan" && target.dataset.wp) focusPackage(target.dataset.wp);
     if (route === "presentations" && /^\d+$/.test(target.dataset.presentation || "")) {
       const card = document.querySelector('.presentation-card[data-review-week="' + target.dataset.presentation + '"]');
@@ -1771,6 +1779,31 @@ function wireTabs() {
         card.open = true;
         card.querySelector("summary").focus({ preventScroll: true });
         card.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+      }
+    }
+  });
+}
+
+/* ---------------- Resources: embedded measurement campaign ----------------
+ * measurements.html is generated outside this repository and loads only when its tab is first
+ * shown (about 6 MB). The page reports its height and scroll targets with postMessage, so the
+ * frame needs no fixed height and works on file:// as well as on GitHub Pages.
+ */
+function wireCampaign() {
+  const frame = byId("campaign-frame");
+  if (!frame) return;
+  document.addEventListener("shown.bs.tab", (e) => {
+    if (e.target && e.target.id === "resources-tab-campaign" && !frame.getAttribute("src")) frame.setAttribute("src", frame.dataset.src);
+  });
+  window.addEventListener("message", (e) => {
+    const msg = e.data;
+    if (e.source !== frame.contentWindow || !msg || msg.source !== "dpv-campaign") return;
+    if (typeof msg.height === "number" && msg.height > 0) frame.style.height = Math.ceil(msg.height) + "px";
+    if (typeof msg.scroll === "number") {
+      const top = frame.getBoundingClientRect().top;
+      if (msg.scroll > 0 || top < 0) {
+        window.scrollTo({ top: top + window.scrollY + msg.scroll - 16,
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
       }
     }
   });
@@ -1803,6 +1836,7 @@ function indexMilestones() {
 
 async function initialise() {
   wireTabs();
+  wireCampaign();
   onBrowserNav();
   wireControls();
   try {
