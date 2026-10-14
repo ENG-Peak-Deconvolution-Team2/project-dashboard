@@ -219,6 +219,19 @@ table{border-collapse:collapse;width:100%}
 .erow .nx{font-size:11px;font-weight:500;color:var(--brand);background:var(--brand-soft);padding:0 6px;border-radius:5px;margin-left:6px}
 .erow.missing b{color:var(--miss)}
 
+/* comparable sets · blank subtraction */
+.cset{border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:var(--surface2);cursor:pointer;margin-bottom:10px;transition:border-color .15s ease}
+.cset:hover{border-color:#b1a1d9}
+.cset .ch{display:flex;align-items:center;gap:10px;font-size:14px}
+.cset .ch .more{margin:0 0 0 auto}
+.cset .list li{padding:6px 0;font-size:13.5px}
+.ctag{flex:none;min-width:52px;text-align:center;font-size:11.5px;font-weight:600;padding:1px 7px;border-radius:6px;background:var(--plan-soft);color:var(--plan)}
+.ctag.da{color:var(--da);background:color-mix(in srgb,var(--da) 12%,var(--surface))}
+.ctag.mlt{color:var(--mlt);background:color-mix(in srgb,var(--mlt) 12%,var(--surface))}
+.ctag.sht{color:var(--sht);background:color-mix(in srgb,var(--sht) 12%,var(--surface))}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;padding:6px 10px;border:1px solid #dcdfea;border-radius:10px;cursor:pointer;color:var(--ink2)}
+.chk input{margin:0;accent-color:var(--brand)}
+
 /* data explorer */
 .explorer{display:grid;grid-template-columns:340px minmax(0,1fr);gap:16px;align-items:start}
 .side{position:sticky;top:120px;max-height:calc(100vh - 140px);display:flex;flex-direction:column;padding:16px}
@@ -4204,6 +4217,7 @@ return Plotly;
         <div class="card">
           <div class="toolbar">
             <div class="seg" id="ver"><button data-v="s" class="on">Smoothed</button><button data-v="r">Raw</button></div>
+            <label class="chk" title="Subtracts the mean of the PBS blanks from the same stage, session and electrode"><input type="checkbox" id="blankSub"> Subtract blank</label>
             <span class="muted" id="selInfo" style="font-size:13px"></span>
             <span style="flex:1"></span>
             <button class="btn" id="clearSel">Clear selection</button>
@@ -4474,6 +4488,25 @@ function looseHtml(data){
     ${data.loose.map(l => `<div class="note info"><span class="ic">i</span><div><b>Team electrode ${l.label}</b> · ${pl(l.ids.length, "measurement")} ·
       candidate cards ${l.cands.map(n => "E" + n).join(", ") || "none"} <button class="dl" data-sel="${l.ids.join("|")}">Open curves</button></div></div>`).join("")}</div>`;
 }
+function compHtml(key){  // baz + her analitin bir üst seviyesi, diğerleri sabit; yalnız bütün üyeleri ölçülmüş setler
+  const LV = [10, 50, 100], AK = [["DA", "da", "DA"], ["MLT", "mlt", "MLT"], ["5HT", "sht", "5-HT"]];
+  const got = {};
+  DB.meas.forEach(m => { if (m.stage === key && m.mix) (got[m.mix.id] = got[m.mix.id] || []).push(m); });
+  const find = c => DB[key].mix.find(x => AK.every(([k]) => x[k] === c[k]));
+  const sets = DB[key].mix.filter(b => got[b.id]).map(b => [b, AK.filter(([k]) => b[k]).map(([k, cl, nm]) => {
+    const i = LV.indexOf(b[k]);
+    return { cl, nm, m: i >= 0 && i < LV.length - 1 ? find({ ...b, [k]: LV[i + 1] }) : null };
+  })]).filter(([b, ups]) => ups.every(u => u.m && got[u.m.id]));
+  const row = (tag, cl, m) => `<li><span class="ctag ${cl}">${tag}</span><b>${m.id}</b><span class="mono" style="font-size:12.5px">${concOf(m)} µM</span>
+    <span class="w muted">electrode ${got[m.id].map(x => x.label).join(", ")}</span></li>`;
+  const body = sets.length ? sets.map(([b, ups]) => {
+    const ids = [b, ...ups.map(u => u.m)].flatMap(m => got[m.id].map(x => x.id)).join("|");
+    return `<div class="cset" data-sel="${ids}"><div class="ch"><b>${b.id} set</b><span class="muted">${ids.split("|").length} curves</span>
+      <button class="more" data-sel="${ids}">Open curves →</button></div>
+      <ul class="list">${row("Base", "", b)}${ups.map(u => row("+" + u.nm, u.cl, u.m)).join("")}</ul></div>`;
+  }).join("") : `<p class="muted" style="margin:0;font-size:13.5px">No complete set yet. A set needs the base mixture and the next level up of each analyte to be measured.</p>`;
+  return `<div class="card mt"><h2>Comparable sets</h2><p class="lead">A base mixture and the next level up of each analyte, one at a time, with the other analytes held fixed. Only sets with every member measured are listed. By design the base and its neighbours are measured on different electrodes, so each difference also carries the electrode difference. Click a set to open its curves in the Data explorer.</p>${body}</div>`;
+}
 function renderMix(key){
   const data = DB[key], view = $(`.view[data-view="${key}"]`);
   const reps = repsOf(data), els = cardsOf(data);
@@ -4487,6 +4520,7 @@ function renderMix(key){
           ${m ? `<span class="mono" style="font-size:12.5px">${concOf(m)} µM</span>` : ""}
           <span class="w"><span class="chip">${r.status === "missing" ? "Re-measure" : "Queued"}</span></span></li>`; }).join("") + `</ul></div>`;
   }
+  h += compHtml(key);
   h += `<div class="card mt"><h2>${key === "uclu" ? "Mixture cube" : "Mixture matrices"}</h2>
     <p class="lead">${key === "uclu" ? "The 27 mixtures, opened into three slices: slice 5-HT, row DA, column MLT." : "Three systems, each 3×3: row first analyte, column second analyte; the third analyte is 0."}
       Dots = measured replicates (3 electrodes). Click a cell to see the measured curves.</p><div class="slices">`;
@@ -4536,7 +4570,32 @@ function plotLayout(extra){
   return Object.assign({ paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { family: "Fira Sans, Segoe UI, sans-serif", color: ink },
     xaxis: ax("Potential (V)"), yaxis: ax("ΔI (µA)"), hovermode: "closest", margin: { l: 56, r: 12, t: 12, b: 46 } }, extra || {});
 }
-const st = { sel: new Set(), v: "s", stage: "all", kind: "all", q: "" };
+const st = { sel: new Set(), v: "s", stage: "all", kind: "all", q: "", blank: false };
+// blank çıkarma: aynı aşama, oturum ve elektrottaki PBS blank'larının ortalaması, ölçümün potansiyel noktalarına doğrusal aradeğerlenir
+const bkey = m => `${m.stage}|${m.series}|${m.label.split("x")[0]}`;
+const BLANKS = {}, BCACHE = {};
+DB.meas.forEach(m => { if (m.analyte === "blank") (BLANKS[bkey(m)] = BLANKS[bkey(m)] || []).push(m); });
+function interp(xs, ys, x){
+  if (x < xs[0] - 1e-9 || x > xs[xs.length - 1] + 1e-9) return null;
+  let j = 0; while (j < xs.length - 2 && xs[j + 1] < x) j++;
+  const t = xs[j + 1] === xs[j] ? 0 : (x - xs[j]) / (xs[j + 1] - xs[j]);
+  return ys[j] + t * (ys[j + 1] - ys[j]);
+}
+const blanksFor = (m, v) => m.analyte === "blank" ? [] : (BLANKS[bkey(m)] || []).filter(b => b.plot[v]);
+function blankOf(m, v){
+  const k = m.id + "|" + v;
+  if (!(k in BCACHE)) {
+    const bs = blanksFor(m, v).map(b => b.plot[v]);
+    BCACHE[k] = bs.length ? m.plot[v][0].map(x => { const ys = bs.map(p => interp(p[0], p[1], x));
+      return ys.includes(null) ? null : ys.reduce((a, y) => a + y, 0) / ys.length; }) : null;
+  }
+  return BCACHE[k];
+}
+function curveOf(m){
+  const p = m.plot[st.v]; if (!p) return null;
+  const b = st.blank && m.analyte !== "blank" ? blankOf(m, st.v) : null;
+  return b ? [p[0], p[1].map((y, i) => b[i] === null ? null : Math.round((y - b[i]) * 1e5) / 1e5)] : p;
+}
 function filtered(){
   const q = st.q.toLowerCase();
   return DB.meas.filter(m => (st.stage === "all" || m.stage === st.stage)
@@ -4567,14 +4626,23 @@ function renderPlot(){
   $("#mainPlot").style.display = ids.length ? "block" : "none";
   $("#clearSel").toggleAttribute("disabled", !ids.length);
   const noRaw = ids.filter(id => !MEAS[id].plot[st.v]).length;
-  $("#selInfo").textContent = ids.length ? `${pl(ids.length, "curve")}${noRaw ? ` · ${noRaw} without this version` : ""}` : "";
+  const noBlank = st.blank ? ids.filter(id => MEAS[id].plot[st.v] && MEAS[id].analyte !== "blank" && !blankOf(MEAS[id], st.v)).length : 0;
+  $("#selInfo").textContent = ids.length ? `${pl(ids.length, "curve")}${noRaw ? ` · ${noRaw} without this version` : ""}`
+    + (st.blank ? ` · blank subtracted${noBlank ? ` · ${noBlank} without a blank on this electrode, shown unsubtracted` : ""}` : "") : "";
   if (!ids.length) return;
   const traces = ids.map((id, i) => {
-    const m = MEAS[id], p = m.plot[st.v]; if (!p) return null;
+    const m = MEAS[id], p = curveOf(m); if (!p) return null;
     return { x: p[0], y: p[1], mode: "lines", name: concText(m) + ` · ${m.label}`, line: { color: selColor(i), width: 2 },
       hovertemplate: `<b>${m.name}</b><br>%{x:.3f} V · %{y:.4f} µA<extra></extra>` };
   }).filter(Boolean);
-  Plotly.react("mainPlot", traces, plotLayout({ legend: { orientation: "h", y: -0.18, font: { size: 11 } }, margin: { l: 56, r: 12, t: 12, b: 60 } }), PCONF);
+  const lay = plotLayout({ legend: { orientation: "h", y: -0.18, font: { size: 11 } }, margin: { l: 56, r: 12, t: 12, b: 60 } });
+  if (st.blank) lay.yaxis.title.text = "ΔI − blank (µA)";
+  Plotly.react("mainPlot", traces, lay, PCONF);
+}
+function blankCell(m){
+  const bs = blanksFor(m, st.v);
+  const t = !bs.length ? "no blank" : bs.length === 1 ? `blank ${bs[0].label}` : `${bs.length} blanks averaged`;
+  return `<div class="muted" style="font-size:11.5px" title="${bs.map(b => b.name).join(" · ")}">${t}</div>`;
 }
 function renderSelTable(){
   const ids = [...st.sel];
@@ -4582,7 +4650,7 @@ function renderSelTable(){
     ids.map((id, i) => { const m = MEAS[id];
       return `<tr><td><span class="swatch" style="background:${selColor(i)}"></span><b>${concText(m)}</b><div class="muted mono" style="font-size:11.5px">${m.name}</div></td>
         <td>${STAGE_NAME[m.stage]}${m.analyte === "blank" ? " · control" : ""}</td>
-        <td>${m.label}${PLAN_OF[id] ? `<div class="muted" style="font-size:11.5px">plan ${PLAN_OF[id]}</div>` : ""}</td>
+        <td>${m.label}${PLAN_OF[id] ? `<div class="muted" style="font-size:11.5px">plan ${PLAN_OF[id]}</div>` : ""}${st.blank && m.analyte !== "blank" ? blankCell(m) : ""}</td>
         <td>${Object.keys(m.files).map(v => v === "raw" ? "raw" : "smoothed").join(" · ")}</td>
         <td class="muted">${m.note || ""}</td></tr>`; }).join("") + `</tbody>`
     : `<tbody><tr><td class="muted">Nothing selected.</td></tr></tbody>`;
@@ -4609,7 +4677,8 @@ const RENDER = {
   veri: () => {
     $("#q").addEventListener("input", e => { st.q = e.target.value; renderList(); });
     $("#ver").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; st.v = b.dataset.v;
-      $$("#ver button").forEach(x => x.classList.toggle("on", x === b)); renderPlot(); });
+      $$("#ver button").forEach(x => x.classList.toggle("on", x === b)); renderPlot(); renderSelTable(); });
+    $("#blankSub").addEventListener("change", e => { st.blank = e.target.checked; renderPlot(); renderSelTable(); });
     $("#clearSel").onclick = () => { st.sel.clear(); renderList(); renderPlot(); renderSelTable(); };
     $("#selVisible").onclick = () => { filtered().forEach(m => st.sel.add(m.id)); renderList(); renderPlot(); renderSelTable(); };
     $("#fileInfo").textContent = `${pl(DB.meas.length, "measurement")} · ${DB.meas.reduce((a, m) => a + Object.keys(m.files).length, 0)} files (raw + smoothed)`;
