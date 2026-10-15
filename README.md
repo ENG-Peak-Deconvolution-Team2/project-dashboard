@@ -1,5 +1,7 @@
 # Peak Deconvolution — Team 2 Dashboard
 
+Project title: **AI-Driven Peak Deconvolution with Explainable AI for Detection and Quantification of Voltammetric Biomarker Signals** (set 2026-10-15).
+
 [Open dashboard](https://eng-peak-deconvolution-team2.github.io/project-dashboard/) · [Edit project data](https://github.com/ENG-Peak-Deconvolution-Team2/project-dashboard/edit/main/data/project.json)
 
 **Last verified: 2026-10-15.**
