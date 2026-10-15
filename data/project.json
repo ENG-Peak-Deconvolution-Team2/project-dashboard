@@ -715,6 +715,24 @@
       "title": "Chatbot integration limited to result queries",
       "summary": "Natural-language interaction is limited to WP6.3, which provides queries of model results within the web interface.",
       "actions": []
+    },
+    {
+      "date": "2026-10-14",
+      "title": "Explainability split by task",
+      "summary": "The Gantt workbook was revised: WP5 now has five tasks (detection, classification, regression and local-data explanations, each with reliability tests, and a cross-task comparison). WP3.1 was renamed Detection and WP3.2–3.3 were extended by one week.",
+      "actions": []
+    },
+    {
+      "date": "2026-10-15",
+      "title": "Single-analyte ladder at 20 µM",
+      "summary": "The fourth level of the single-analyte ladder is 20 µM (1–5–10–20–50–100 µM). Melatonin was measured at 25 µM and counts in place of 20 µM for now.",
+      "actions": []
+    },
+    {
+      "date": "2026-10-15",
+      "title": "Two single-analyte series to be re-measured",
+      "summary": "Melatonin series 1 has no PBS blank on its electrode and will probably be re-measured from the start. One more dopamine series will be measured, and dopamine series 1 will probably not be used. Neither series counts as complete.",
+      "actions": []
     }
   ],
   "meetings": [],
