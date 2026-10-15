@@ -2,7 +2,7 @@
 
 [Open dashboard](https://eng-peak-deconvolution-team2.github.io/project-dashboard/) · [Edit project data](https://github.com/ENG-Peak-Deconvolution-Team2/project-dashboard/edit/main/data/project.json)
 
-**Last verified: 2026-09-30.**
+**Last verified: 2026-10-15.**
 
 An English project dashboard exclusively for **Team 2 — Machine learning**.
 Members: Hıba Berchane (BME) and Hasan Oruçlar (EEE), presented with equal prominence.
@@ -12,10 +12,13 @@ Members: Hıba Berchane (BME) and Hasan Oruçlar (EEE), presented with equal pro
 | Section | Route | Content |
 |---|---|---|
 | Overview | #overview | Latest update, programme timeline, next presentation and selected-week tasks |
-| Project plan | #plan | Gantt schedule (open by default), work packages and risk/solution records |
+| Project plan | #plan | Gantt schedule (open by default), work packages (status, % progress, team members) and risk/solution records |
 | Presentations | #presentations | Weeks 3, 5, 7, 10, 12 and 14 as disclosures; the next review is open |
-| Results & resources | #results | Experiment records; Resources has a Library tab (planning workbook, datasets, literature) and a Measurement campaign tab (`#measurements`) |
+| Results & resources | #results | Three full-width tabs: Experiments & results, Library (planning workbook, datasets, literature; `#resources`) and Measurement campaign (`#measurements`) |
 | Team | #team | Logged hours per member and work package, assigned work, threads, decisions and meetings |
+
+Below the five sections the sidebar links to the analysis website, VoltEPIC
+(WP6, https://eng-peak-deconvolution-team2.github.io/voltepic/), in a new tab.
 
 The five panel shells and their navigation buttons are static HTML. Plan content
 is rendered from `data/project.json`. The Team page also reads the dashboard
@@ -31,7 +34,8 @@ work package. Navigation does not clone or move any panels at runtime.
 
 - Task names, weeks, package titles and department responsibilities follow
   `ENG/excel/PeakDeconv_Gantt_Chart.xlsx` in the research workspace.
-  The dashboard contains 6 packages, 23 tasks and 15 planning weeks.
+  The dashboard contains 6 packages, 25 tasks and 15 planning weeks (workbook revised
+  2026-10-14: WP3.1 renamed Detection, WP3.2–3.3 one week longer, WP5 split into five tasks).
 - Presentation weeks are explicitly marked **PRESENTATION** in row 9 of the
   Gantt chart sheet: weeks **3, 5, 7, 10, 12 and 14**.
 - Week 8 is the midterm. No tasks are scheduled in weeks 1 or 8.
@@ -43,7 +47,7 @@ work package. Navigation does not clone or move any panels at runtime.
 - Risk records are **potential scenarios and proposed responses**. Their initial
   status is `To review`; severity, occurrence and owner acceptance are not
   inferred. `suggestedOwner` identifies a proposed departmental lead.
-- The original Gantt workbook is included unchanged in `documents/`. It retains
+- The Gantt workbook (revision of 2026-10-14) is included unchanged in `documents/`. It retains
   its original sheets; the dashboard itself displays only Team 2.
 - The dashboard presents both members equally, without a project-lead label,
   following the project owner's display decision on 2026-09-24.
@@ -65,17 +69,26 @@ such as `R01`, and resource IDs. Keep existing identifiers when editing.
 ### Task status and outputs
 
 Each task retains `id`, `name`, `weeks`, `owner`, `modelling`, `status`,
-and `outputs`. Status values: `Not reported`, `Planned`, `In progress`,
-`Complete`, `Blocked`.
+`progress`, `contributors` and `outputs`. Status values: `Not reported`, `Planned`,
+`In progress`, `Complete`, `Blocked`.
 
 ```json
 "status": { "team2": "In progress" },
+"progress": { "team2": 40 },
+"contributors": ["Hıba Berchane", "Hasan Oruçlar"],
 "outputs": [{ "label": "Report", "href": "documents/report.pdf" }]
 ```
 
 This is a schema example, not a recorded output. Upload a real file or supply a
 real URL before adding a link. Owner labels remain the Excel assignments:
 `BME lead`, `EEE lead` and `BME+EEE`.
+
+`progress` is the percent complete, shown in the status badge. The package
+header shows the mean over its tasks; a task without a value counts as 100 when
+`Complete` and 0 otherwise. The WP1 values are measured from the measurement
+campaign (planned cells measured, or mixtures prepared for WP1.2); the others
+are estimates from the existing outputs. `contributors` lists the members
+working on a task; their first names appear under the owner label.
 
 ### Presentation records
 
@@ -156,8 +169,8 @@ curve as a plot (no file downloads; raw files stay with the team). It is
 generated, not edited by hand:
 `data/lokal_data_set_gezgin/build_portal.py` in the research workspace reads the
 measurement files and writes it here (about 6 MB, with Plotly and the curves
-embedded). Resources › Measurement campaign loads it in an iframe the first time
-the tab opens; `#measurements` opens that tab directly. The page sends its height
+embedded). The Measurement campaign tab of Results & resources loads it, full width, in an
+iframe the first time the tab opens; `#measurements` opens that tab directly. The page sends its height
 and scroll targets to the dashboard with `postMessage`, so the frame has no fixed
 height. Opened on its own, the page shows its own header.
 
