@@ -86,7 +86,7 @@ real URL before adding a link. Owner labels remain the Excel assignments:
 `progress` is the percent complete, shown in the status badge. The package
 header shows the mean over its tasks; a task without a value counts as 100 when
 `Complete` and 0 otherwise. The WP1 values are measured from the measurement
-campaign (planned cells measured, or mixtures prepared for WP1.2); the others
+campaign (planned measurements done, single-analyte PBS blanks included and series to be re-measured excluded; mixtures prepared for WP1.2); the others
 are estimates from the existing outputs. `contributors` lists the members
 working on a task; their first names appear under the owner label.
 
