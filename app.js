@@ -29,6 +29,8 @@
  *       "owner": string,                  // department lead, e.g. "BME+EEE"
  *       "modelling": boolean,
  *       "status": { "<teamId>": string }, // initially "Not reported"
+ *       "progress": { "<teamId>": number }, // optional, percent complete
+ *       "contributors": string[],         // optional, member names working on the task
  *       "outputs": (string | { "label": string, "href": string })[]
  *     }]
  *   }],
@@ -51,8 +53,8 @@ const ROUTE_ALIASES = {
   schedule: { route: "plan", section: "plan-schedule" },
   packages: { route: "plan", section: "plan-packages" },
   risks: { route: "plan", section: "plan-risks" },
-  resources: { route: "results", section: "research-resources" },
-  measurements: { route: "results", section: "research-resources", tab: "resources-tab-campaign" },
+  resources: { route: "results", tab: "resources-tab-library" },
+  measurements: { route: "results", tab: "resources-tab-campaign" },
   journal: { route: "team", section: "team-journal" }
 };
 const WEEKS_FALLBACK = 15;
@@ -140,6 +142,11 @@ function teamShort(team) {
 function statusFor(task, teamId) {
   const s = task.status && typeof task.status === "object" ? task.status[teamId] : null;
   return typeof s === "string" && s ? s : "Not reported";
+}
+
+function progressFor(task, teamId) {
+  const p = task.progress && typeof task.progress === "object" ? task.progress[teamId] : null;
+  return Number.isFinite(p) ? p : null;
 }
 
 function formatWeeks(weeks) {
@@ -509,7 +516,9 @@ function progressText(tasks, teams) {
   const unknown = statuses.filter(st => st === "Not reported").length;
   if (!statuses.length || unknown === statuses.length) return "Progress not yet reported";
   const done = statuses.filter(st => st === "Complete").length;
-  return unknown ? `${done} complete · ${unknown} not reported` : `${done}/${statuses.length} complete`;
+  if (unknown) return `${done} complete · ${unknown} not reported`;
+  const pct = tasks.flatMap(t => teams.map(team => progressFor(t, team.id) ?? (statusFor(t, team.id) === "Complete" ? 100 : 0)));
+  return `${done}/${statuses.length} complete · ${Math.round(pct.reduce((a, b) => a + b, 0) / pct.length)}%`;
 }
 
 function renderPackages() {
@@ -535,17 +544,22 @@ function renderPackages() {
     if (pkg.summary) body.appendChild(el("p", "package-summary-text", pkg.summary));
     for (const t of pkg.tasks || []) {
       const row = el("div", "task-detail");
+      const owner = el("span", "task-owner", t.owner || "Not assigned");
+      if (Array.isArray(t.contributors) && t.contributors.length) {
+        owner.appendChild(el("span", "task-team", t.contributors.map(n => String(n).split(" ")[0]).join(" · ")));
+      }
       row.append(
         el("span", "task-id", t.id),
         el("span", "task-title", t.name),
         el("span", "task-weeks", formatWeeks(t.weeks)),
-        el("span", "task-owner", t.owner || "Not assigned")
+        owner
       );
       const statuses = el("span", "task-statuses");
       for (const team of teams) {
         const status = statusFor(t, team.id);
         if (status === "Not reported") continue;
-        const badge = el("span", "task-status status-" + status.toLowerCase().replace(/\s+/g, "-"), status);
+        const pct = progressFor(t, team.id);
+        const badge = el("span", "task-status status-" + status.toLowerCase().replace(/\s+/g, "-"), pct === null ? status : `${status} · ${pct}%`);
         badge.dataset.team = team.id;
         statuses.appendChild(badge);
       }

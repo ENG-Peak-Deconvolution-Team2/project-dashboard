@@ -2,13 +2,24 @@
   "project": {
     "name": "Peak Deconvolution",
     "description": "Voltammetric data acquisition, predictive modelling and explainable analysis.",
-    "updated": "2026-10-01",
-    "planVerified": "2026-09-23",
+    "updated": "2026-10-15",
+    "planVerified": "2026-10-15",
     "weeks": 15,
     "startDate": null,
     "repositoryUrl": "https://github.com/ENG-Peak-Deconvolution-Team2/project-dashboard",
     "siteUrl": "https://eng-peak-deconvolution-team2.github.io/project-dashboard/",
-    "updates": []
+    "updates": [
+      {
+        "date": "2026-10-15",
+        "achievement": "Detection on the reference split reached two final models (a statistical tie); first explanation results for model A.",
+        "evidence": {
+          "label": "Measurement campaign",
+          "href": "#measurements"
+        },
+        "next": "Classification and regression with their explanations (WP3.2–3.3, WP5.2–5.3); local measurements continue (WP1.3–1.4).",
+        "blocker": null
+      }
+    ]
   },
   "teams": [
     {
@@ -47,8 +58,15 @@
           "owner": "BME+EEE",
           "modelling": false,
           "status": {
-            "team2": "Not reported"
+            "team2": "Complete"
           },
+          "progress": {
+            "team2": 100
+          },
+          "contributors": [
+            "Hıba Berchane",
+            "Hasan Oruçlar"
+          ],
           "outputs": []
         },
         {
@@ -62,8 +80,15 @@
           "owner": "BME lead",
           "modelling": false,
           "status": {
-            "team2": "Not reported"
+            "team2": "In progress"
           },
+          "progress": {
+            "team2": 46
+          },
+          "contributors": [
+            "Hıba Berchane",
+            "Hasan Oruçlar"
+          ],
           "outputs": []
         },
         {
@@ -79,9 +104,21 @@
           "owner": "BME lead",
           "modelling": false,
           "status": {
-            "team2": "Not reported"
+            "team2": "In progress"
           },
-          "outputs": []
+          "progress": {
+            "team2": 31
+          },
+          "contributors": [
+            "Hıba Berchane",
+            "Hasan Oruçlar"
+          ],
+          "outputs": [
+            {
+              "label": "Measurement campaign",
+              "href": "#measurements"
+            }
+          ]
         },
         {
           "id": "WP1.4",
@@ -95,9 +132,21 @@
           "owner": "BME lead",
           "modelling": false,
           "status": {
-            "team2": "Not reported"
+            "team2": "In progress"
           },
-          "outputs": []
+          "progress": {
+            "team2": 31
+          },
+          "contributors": [
+            "Hıba Berchane",
+            "Hasan Oruçlar"
+          ],
+          "outputs": [
+            {
+              "label": "Measurement campaign",
+              "href": "#measurements"
+            }
+          ]
         }
       ]
     },
@@ -117,8 +166,15 @@
           "owner": "BME lead",
           "modelling": false,
           "status": {
-            "team2": "Not reported"
+            "team2": "Complete"
           },
+          "progress": {
+            "team2": 100
+          },
+          "contributors": [
+            "Hıba Berchane",
+            "Hasan Oruçlar"
+          ],
           "outputs": []
         },
         {
@@ -131,8 +187,14 @@
           "owner": "EEE lead",
           "modelling": false,
           "status": {
-            "team2": "Not reported"
+            "team2": "Complete"
           },
+          "progress": {
+            "team2": 100
+          },
+          "contributors": [
+            "Hasan Oruçlar"
+          ],
           "outputs": []
         },
         {
@@ -145,8 +207,14 @@
           "owner": "EEE lead",
           "modelling": false,
           "status": {
-            "team2": "Not reported"
+            "team2": "Complete"
           },
+          "progress": {
+            "team2": 100
+          },
+          "contributors": [
+            "Hıba Berchane"
+          ],
           "outputs": []
         }
       ]
@@ -160,7 +228,7 @@
       "tasks": [
         {
           "id": "WP3.1",
-          "name": "Analyte presence detection",
+          "name": "Detection",
           "weeks": [
             2,
             3,
@@ -169,22 +237,40 @@
           "owner": "EEE lead",
           "modelling": true,
           "status": {
-            "team2": "Not reported"
+            "team2": "Complete"
           },
-          "outputs": []
+          "progress": {
+            "team2": 100
+          },
+          "contributors": [
+            "Hasan Oruçlar"
+          ],
+          "outputs": [
+            {
+              "label": "Model card (VoltEPIC)",
+              "href": "https://eng-peak-deconvolution-team2.github.io/voltepic/model.html"
+            }
+          ]
         },
         {
           "id": "WP3.2",
           "name": "Quantification — concentration classification",
           "weeks": [
             4,
-            5
+            5,
+            6
           ],
           "owner": "EEE lead",
           "modelling": true,
           "status": {
-            "team2": "Not reported"
+            "team2": "In progress"
           },
+          "progress": {
+            "team2": 40
+          },
+          "contributors": [
+            "Hıba Berchane"
+          ],
           "outputs": []
         },
         {
@@ -192,13 +278,17 @@
           "name": "Quantification — concentration regression",
           "weeks": [
             5,
-            6
+            6,
+            7
           ],
           "owner": "EEE lead",
           "modelling": true,
           "status": {
-            "team2": "Not reported"
+            "team2": "Planned"
           },
+          "contributors": [
+            "Hasan Oruçlar"
+          ],
           "outputs": []
         },
         {
@@ -210,8 +300,12 @@
           "owner": "BME+EEE",
           "modelling": false,
           "status": {
-            "team2": "Not reported"
+            "team2": "Planned"
           },
+          "contributors": [
+            "Hıba Berchane",
+            "Hasan Oruçlar"
+          ],
           "outputs": []
         }
       ]
@@ -233,8 +327,11 @@
           "owner": "EEE lead",
           "modelling": false,
           "status": {
-            "team2": "Not reported"
+            "team2": "Planned"
           },
+          "contributors": [
+            "Hıba Berchane"
+          ],
           "outputs": []
         },
         {
@@ -247,8 +344,11 @@
           "owner": "EEE lead",
           "modelling": true,
           "status": {
-            "team2": "Not reported"
+            "team2": "Planned"
           },
+          "contributors": [
+            "Hasan Oruçlar"
+          ],
           "outputs": []
         },
         {
@@ -262,8 +362,11 @@
           "owner": "EEE lead",
           "modelling": true,
           "status": {
-            "team2": "Not reported"
+            "team2": "Planned"
           },
+          "contributors": [
+            "Hıba Berchane"
+          ],
           "outputs": []
         },
         {
@@ -276,8 +379,11 @@
           "owner": "EEE lead",
           "modelling": true,
           "status": {
-            "team2": "Not reported"
+            "team2": "Planned"
           },
+          "contributors": [
+            "Hasan Oruçlar"
+          ],
           "outputs": []
         },
         {
@@ -291,8 +397,12 @@
           "owner": "BME+EEE",
           "modelling": false,
           "status": {
-            "team2": "Not reported"
+            "team2": "Planned"
           },
+          "contributors": [
+            "Hıba Berchane",
+            "Hasan Oruçlar"
+          ],
           "outputs": []
         }
       ]
@@ -301,34 +411,72 @@
       "id": "WP5",
       "name": "Explainable AI (XAI)",
       "shortName": "Explainability",
-      "summary": "Select and apply an explainability method, then assess the faithfulness and stability of the resulting explanations.",
+      "summary": "Explain the detection, classification, regression and local-data models, test the reliability of each explanation, and compare the explanations across tasks.",
       "color": "#946200",
       "tasks": [
         {
           "id": "WP5.1",
-          "name": "XAI method selection and setup",
+          "name": "Detection XAI — setup, explanations and reliability tests",
           "weeks": [
             3,
-            4,
+            4
+          ],
+          "owner": "EEE lead",
+          "modelling": false,
+          "status": {
+            "team2": "Complete"
+          },
+          "progress": {
+            "team2": 100
+          },
+          "contributors": [
+            "Hasan Oruçlar"
+          ],
+          "outputs": [
+            {
+              "label": "XAI results (VoltEPIC)",
+              "href": "https://eng-peak-deconvolution-team2.github.io/voltepic/explainability.html"
+            }
+          ]
+        },
+        {
+          "id": "WP5.2",
+          "name": "Classification XAI — explanations and reliability tests",
+          "weeks": [
             5,
+            6
+          ],
+          "owner": "EEE lead",
+          "modelling": false,
+          "status": {
+            "team2": "Planned"
+          },
+          "contributors": [
+            "Hıba Berchane"
+          ],
+          "outputs": []
+        },
+        {
+          "id": "WP5.3",
+          "name": "Regression XAI — explanations and reliability tests",
+          "weeks": [
             6,
             7
           ],
           "owner": "EEE lead",
           "modelling": false,
           "status": {
-            "team2": "Not reported"
+            "team2": "Planned"
           },
+          "contributors": [
+            "Hasan Oruçlar"
+          ],
           "outputs": []
         },
         {
-          "id": "WP5.2",
-          "name": "Explanation runs on project models",
+          "id": "WP5.4",
+          "name": "Local-data XAI — explanations and reliability tests",
           "weeks": [
-            5,
-            6,
-            7,
-            9,
             10,
             11,
             12
@@ -336,13 +484,16 @@
           "owner": "EEE lead",
           "modelling": false,
           "status": {
-            "team2": "Not reported"
+            "team2": "Planned"
           },
+          "contributors": [
+            "Hıba Berchane"
+          ],
           "outputs": []
         },
         {
-          "id": "WP5.3",
-          "name": "Explanation faithfulness and stability testing",
+          "id": "WP5.5",
+          "name": "Cross-task comparison of explanations",
           "weeks": [
             13,
             14,
@@ -351,8 +502,12 @@
           "owner": "BME+EEE",
           "modelling": false,
           "status": {
-            "team2": "Not reported"
+            "team2": "Planned"
           },
+          "contributors": [
+            "Hıba Berchane",
+            "Hasan Oruçlar"
+          ],
           "outputs": []
         }
       ]
@@ -375,9 +530,21 @@
           "owner": "BME+EEE",
           "modelling": false,
           "status": {
-            "team2": "Not reported"
+            "team2": "Complete"
           },
-          "outputs": []
+          "progress": {
+            "team2": 100
+          },
+          "contributors": [
+            "Hıba Berchane",
+            "Hasan Oruçlar"
+          ],
+          "outputs": [
+            {
+              "label": "VoltEPIC",
+              "href": "https://eng-peak-deconvolution-team2.github.io/voltepic/"
+            }
+          ]
         },
         {
           "id": "WP6.2",
@@ -395,9 +562,21 @@
           "owner": "EEE lead",
           "modelling": false,
           "status": {
-            "team2": "Not reported"
+            "team2": "In progress"
           },
-          "outputs": []
+          "progress": {
+            "team2": 40
+          },
+          "contributors": [
+            "Hıba Berchane",
+            "Hasan Oruçlar"
+          ],
+          "outputs": [
+            {
+              "label": "Analyzer (VoltEPIC)",
+              "href": "https://eng-peak-deconvolution-team2.github.io/voltepic/app.html"
+            }
+          ]
         },
         {
           "id": "WP6.3",
@@ -409,8 +588,15 @@
           "owner": "EEE lead",
           "modelling": false,
           "status": {
-            "team2": "Not reported"
+            "team2": "In progress"
           },
+          "progress": {
+            "team2": 15
+          },
+          "contributors": [
+            "Hıba Berchane",
+            "Hasan Oruçlar"
+          ],
           "outputs": []
         },
         {
@@ -424,8 +610,15 @@
           "owner": "BME+EEE",
           "modelling": false,
           "status": {
-            "team2": "Not reported"
+            "team2": "In progress"
           },
+          "progress": {
+            "team2": 10
+          },
+          "contributors": [
+            "Hıba Berchane",
+            "Hasan Oruçlar"
+          ],
           "outputs": []
         }
       ]
@@ -474,7 +667,7 @@
       "id": "gantt",
       "type": "document",
       "title": "Project work plan",
-      "description": "Original 15-week planning workbook. The dashboard presents the Team 2 scope.",
+      "description": "15-week planning workbook, revised 2026-10-14 (WP5 split into five tasks). The dashboard presents the Team 2 scope.",
       "href": "documents/PeakDeconv_Gantt_Chart.xlsx",
       "label": "Download Excel"
     },
@@ -490,7 +683,7 @@
       "id": "dataset-local",
       "type": "dataset",
       "title": "Local dataset",
-      "description": "DPV measurements on screen-printed carbon electrodes, recorded in WP1: dopamine, melatonin and serotonin as single analytes, binary and ternary mixtures, with PBS blanks. Progress per stage and every recorded curve are under Resources › Measurement campaign.",
+      "description": "DPV measurements on screen-printed carbon electrodes, recorded in WP1: dopamine, melatonin and serotonin as single analytes, binary and ternary mixtures, with PBS blanks. Progress per stage and every recorded curve are in the Measurement campaign tab of Results & resources.",
       "href": null,
       "label": null,
       "pending": "Raw files are kept by the team and not published"
@@ -548,7 +741,7 @@
     },
     {
       "week": 5,
-      "title": "Classification & emerging quantification",
+      "title": "Detection finals, first explanations & local-data progress",
       "packages": [
         "WP1",
         "WP3",
@@ -556,13 +749,13 @@
         "WP6"
       ],
       "expectations": [
-        "Report concentration-classification findings and compare them with the earlier detection results.",
-        "Introduce the regression setup and preliminary findings; regression continues into week 6.",
-        "Summarise measurement coverage, labelling progress and unresolved data-quality issues.",
-        "Show the first explanation examples, where available, and progress on pipeline integration."
+        "Recap the problem and the plan, with task status per work package at the end of week 5.",
+        "Report detection (WP3.1): data, block-wise folds, the five completed stages and the two final models, with model A's recipe.",
+        "Present the first explanations of model A (WP5.1): permutation importance per 20 mV slice, four methods and five reliability tests.",
+        "Show local-data progress (WP1), the first concentration-level baseline (WP3.2), the interface design draft (WP6.1) and the plan for weeks 6–7."
       ],
-      "evidence": "Detection and classification summary, regression setup, acquisition progress log and early explanation examples.",
-      "status": "Not recorded",
+      "evidence": "Detection finalists table, model A recipe, PFI maps and test matrix, measurement-campaign progress, WP3.2 baseline and interface draft.",
+      "status": "Prepared",
       "outputs": []
     },
     {
@@ -579,7 +772,7 @@
         "Compare detection, classification and regression on the reference dataset using the documented evaluation protocol.",
         "Explain the selected pipelines, their limitations and the evidence supporting the selection.",
         "Present the local dataset, quality-control record, split and preprocessing preparation.",
-        "Review the XAI setup, initial explanation runs and interface integration before the week 8 midterm."
+        "Review the classification and regression explanations (WP5.2–5.3) and interface integration before the week 8 midterm."
       ],
       "evidence": "Model comparison table, pipeline specification, local-data summary and an integrated interface demonstration.",
       "status": "Not recorded",
@@ -631,7 +824,7 @@
       ],
       "expectations": [
         "Present the completed local-data evaluation and comparison, stating the scope and limitations of each claim.",
-        "Show progress on explanation faithfulness and stability testing, with remaining week 15 work clearly identified.",
+        "Show progress on the cross-task comparison of explanations (WP5.5), with remaining week 15 work clearly identified.",
         "Demonstrate the integrated interface and report end-to-end test findings and unresolved defects.",
         "Summarise achieved outputs, open risks, documentation status and the remaining week 15 actions."
       ],
