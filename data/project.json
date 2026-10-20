@@ -2,7 +2,7 @@
   "project": {
     "name": "Peak Deconvolution",
     "description": "Voltammetric data acquisition, predictive modelling and explainable analysis.",
-    "updated": "2026-10-15",
+    "updated": "2026-10-20",
     "planVerified": "2026-10-15",
     "weeks": 15,
     "startDate": null,
@@ -107,7 +107,7 @@
             "team2": "In progress"
           },
           "progress": {
-            "team2": 28
+            "team2": 22
           },
           "contributors": [
             "Hıba Berchane",
@@ -135,7 +135,7 @@
             "team2": "In progress"
           },
           "progress": {
-            "team2": 28
+            "team2": 22
           },
           "contributors": [
             "Hıba Berchane",
@@ -683,7 +683,7 @@
       "id": "dataset-local",
       "type": "dataset",
       "title": "Local dataset",
-      "description": "DPV measurements on screen-printed carbon electrodes, recorded in WP1: dopamine, melatonin and serotonin as single analytes, binary and ternary mixtures, with PBS blanks. Progress per stage and every recorded curve are in the Measurement campaign tab of Results & resources.",
+      "description": "DPV measurements on screen-printed carbon electrodes, recorded in WP1: dopamine, melatonin and serotonin as single analytes, binary and ternary mixtures, with PBS blanks. From 2026-10-20 uric acid replaces dopamine in the single-analyte plan; the dopamine scans stay visible. Progress per stage and every recorded curve are in the Measurement campaign tab of Results & resources.",
       "href": null,
       "label": null,
       "pending": "Raw files are kept by the team and not published"
@@ -732,6 +732,12 @@
       "date": "2026-10-15",
       "title": "Two single-analyte series to be re-measured",
       "summary": "Melatonin series 1 has no PBS blank on its electrode and will probably be re-measured from the start. One more dopamine series will be measured, and dopamine series 1 will probably not be used. Neither series counts as complete.",
+      "actions": []
+    },
+    {
+      "date": "2026-10-20",
+      "title": "Uric acid replaces dopamine",
+      "summary": "Uric acid (UA) takes the place of dopamine in the single-analyte plan: 3 series × 6 levels + 3 PBS blanks, not measured yet. The 34 dopamine scans, blanks included, stay visible in the Measurement campaign and are no longer counted; the extra dopamine series planned on 2026-10-15 will not be measured. Single-analyte progress is 34/63 (was 48/63). The binary and ternary plans are unchanged.",
       "actions": []
     }
   ],
