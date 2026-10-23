@@ -2,7 +2,7 @@
   "project": {
     "name": "Peak Deconvolution",
     "description": "Voltammetric data acquisition, predictive modelling and explainable analysis.",
-    "updated": "2026-10-20",
+    "updated": "2026-10-23",
     "planVerified": "2026-10-15",
     "weeks": 15,
     "startDate": null,
@@ -17,6 +17,16 @@
           "href": "#measurements"
         },
         "next": "Classification and regression with their explanations (WP3.2–3.3, WP5.2–5.3); local measurements continue (WP1.3–1.4).",
+        "blocker": null
+      },
+      {
+        "date": "2026-10-23",
+        "achievement": "Uric acid single-analyte series measured: 3 series × 6 levels (1–100 µM), each electrode with its PBS blank (21 scans). Single-analyte stage: 55 of 63 planned measurements (was 34).",
+        "evidence": {
+          "label": "Measurement campaign",
+          "href": "#measurements"
+        },
+        "next": "Single-analyte stage still open: 5-HT series 3 at 20 µM and melatonin series 1, which has no PBS blank. Mixtures: binary 0/81, ternary 15/81 (WP1.3–1.4).",
         "blocker": null
       }
     ]
@@ -107,7 +117,7 @@
             "team2": "In progress"
           },
           "progress": {
-            "team2": 22
+            "team2": 31
           },
           "contributors": [
             "Hıba Berchane",
@@ -135,7 +145,7 @@
             "team2": "In progress"
           },
           "progress": {
-            "team2": 22
+            "team2": 31
           },
           "contributors": [
             "Hıba Berchane",
