@@ -2,7 +2,7 @@
   "project": {
     "name": "Peak Deconvolution",
     "description": "Voltammetric data acquisition, predictive modelling and explainable analysis.",
-    "updated": "2026-10-23",
+    "updated": "2026-10-28",
     "planVerified": "2026-10-15",
     "weeks": 15,
     "startDate": null,
@@ -27,6 +27,16 @@
           "href": "#measurements"
         },
         "next": "Single-analyte stage still open: 5-HT series 3 at 20 µM and melatonin series 1, which has no PBS blank. Mixtures: binary 0/81, ternary 15/81 (WP1.3–1.4).",
+        "blocker": null
+      },
+      {
+        "date": "2026-10-28",
+        "achievement": "Ternary mixtures (uric acid × melatonin × serotonin) measured on 5 of the 9 planned electrodes: each with its PBS control and its 9 planned mixtures (45 mixtures, 25 of the 27 compositions). Ternary stage: 45 of 81 planned measurements (was 15). The 29 earlier ternary scans moved to a corrupted class (reason in the Measurement campaign).",
+        "evidence": {
+          "label": "Measurement campaign",
+          "href": "#measurements"
+        },
+        "next": "Ternary electrodes E6–E9 (36 mixtures + 4 PBS controls); binary mixtures 0/81; single-analyte stage: 5-HT series 3 at 20 µM and melatonin series 1 (WP1.3–1.4).",
         "blocker": null
       }
     ]
@@ -93,7 +103,7 @@
             "team2": "In progress"
           },
           "progress": {
-            "team2": 46
+            "team2": 60
           },
           "contributors": [
             "Hıba Berchane",
@@ -117,7 +127,7 @@
             "team2": "In progress"
           },
           "progress": {
-            "team2": 31
+            "team2": 44
           },
           "contributors": [
             "Hıba Berchane",
@@ -145,7 +155,7 @@
             "team2": "In progress"
           },
           "progress": {
-            "team2": 31
+            "team2": 44
           },
           "contributors": [
             "Hıba Berchane",
@@ -693,7 +703,7 @@
       "id": "dataset-local",
       "type": "dataset",
       "title": "Local dataset",
-      "description": "DPV measurements on screen-printed carbon electrodes, recorded in WP1: dopamine, melatonin and serotonin as single analytes, binary and ternary mixtures, with PBS blanks. From 2026-10-20 uric acid replaces dopamine in the single-analyte plan; the dopamine scans stay visible. Progress per stage and every recorded curve are in the Measurement campaign tab of Results & resources.",
+      "description": "DPV measurements on screen-printed carbon electrodes, recorded in WP1: dopamine, melatonin and serotonin as single analytes, binary and ternary mixtures, with PBS blanks. From 2026-10-20 uric acid replaces dopamine in the single-analyte plan and from 2026-10-27 in the mixtures; the dopamine scans stay visible. The earlier ternary scans are kept in a corrupted class; the reason is given in the Measurement campaign. Progress per stage and every recorded curve are in the Measurement campaign tab of Results & resources.",
       "href": null,
       "label": null,
       "pending": "Raw files are kept by the team and not published"
@@ -748,6 +758,18 @@
       "date": "2026-10-20",
       "title": "Uric acid replaces dopamine",
       "summary": "Uric acid (UA) takes the place of dopamine in the single-analyte plan: 3 series × 6 levels + 3 PBS blanks, not measured yet. The 34 dopamine scans, blanks included, stay visible in the Measurement campaign and are no longer counted; the extra dopamine series planned on 2026-10-15 will not be measured. Single-analyte progress is 34/63 (was 48/63). The binary and ternary plans are unchanged.",
+      "actions": []
+    },
+    {
+      "date": "2026-10-27",
+      "title": "Uric acid replaces dopamine in the mixtures",
+      "summary": "The binary and ternary plans now use uric acid in place of dopamine (ternary UA × MLT × 5-HT; binary systems UM, US and MS) with the same levels, blocking and ordering rules. The partial mixture measurements of 2026-10-13 were cancelled; binary and ternary mixtures are measured from the start. Mixtures are prepared from intermediate stocks at three times the final concentration (30 / 150 / 300 µM), 200 µL of each analyte per tube.",
+      "actions": []
+    },
+    {
+      "date": "2026-10-28",
+      "title": "Earlier ternary scans classed as corrupted",
+      "summary": "The 29 earlier ternary scans are kept in a corrupted class in the Measurement campaign, stay visible and are not counted. Reason: they were measured at one third of the intended concentrations, so the concentrations in their file names are three times too high. The planned dopamine-based mixtures show this drop; the off-plan set (raw2) and the uric-acid pilot (raw3) do not, and are classed as corrupted by decision. Ternary progress is 45/81 (was 15/81).",
       "actions": []
     }
   ],
