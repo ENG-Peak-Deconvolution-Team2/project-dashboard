@@ -171,7 +171,10 @@ curve as a plot (no file downloads; raw files stay with the team). It is
 generated, not edited by hand:
 `data/lokal_data_set_gezgin/build_portal.py` in the research workspace reads the
 measurement files and writes it here (about 6 MB, with Plotly and the curves
-embedded). The Measurement campaign tab of Results & resources loads it, full width, in an
+embedded; about 12 MB once encrypted). Since 2026-11-08 the page is written
+encrypted with StatiCrypt (AES-256): without the team password it shows only a
+password form. The password is kept in the research workspace, outside version
+control. The Measurement campaign tab of Results & resources loads it, full width, in an
 iframe the first time the tab opens; `#measurements` opens that tab directly. The page sends its height
 and scroll targets to the dashboard with `postMessage`, so the frame has no fixed
 height. Opened on its own, the page shows its own header.
