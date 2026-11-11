@@ -1804,11 +1804,18 @@ function wireTabs() {
  * frame needs no fixed height and works on file:// as well as on GitHub Pages.
  */
 function wireCampaign() {
+  // results.html (password-protected results, default tab) loads at once; the campaign loads when its tab is first shown
+  const results = byId("results-frame");
+  if (results) { results.setAttribute("src", results.dataset.src); wireFrame(results); }
   const frame = byId("campaign-frame");
   if (!frame) return;
   document.addEventListener("shown.bs.tab", (e) => {
     if (e.target && e.target.id === "resources-tab-campaign" && !frame.getAttribute("src")) frame.setAttribute("src", frame.dataset.src);
   });
+  wireFrame(frame);
+}
+
+function wireFrame(frame) {
   window.addEventListener("message", (e) => {
     const msg = e.data;
     if (e.source !== frame.contentWindow || !msg || msg.source !== "dpv-campaign") return;

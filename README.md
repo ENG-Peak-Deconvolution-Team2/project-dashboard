@@ -179,6 +179,15 @@ iframe the first time the tab opens; `#measurements` opens that tab directly. Th
 and scroll targets to the dashboard with `postMessage`, so the frame has no fixed
 height. Opened on its own, the page shows its own header.
 
+### Results
+
+`results.html` holds the project results (detection, concentration classification, regression
+and explainability): only results, without models or their settings. It is generated, not edited by
+hand: `ENG/sonuc_sayfasi/build_results.py` in the research workspace reads `sonuclar.json` there and
+writes it here, encrypted with StatiCrypt under the same team password as `measurements.html`. The
+Experiments & results tab loads it in an iframe; `data/project.json` keeps `experiments` empty, so
+no result appears unencrypted on the site.
+
 ## Team page
 
 Hours, assignments and threads are entered on the Team page itself. Each member
